@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monnett — Find Your Place</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #F73E5A;
+    --red-dark: #c42d46;
+    --red-glow: rgba(247, 62, 90, 0.3);
+    --black: #0a0a0a;
+    --card: #141414;
+    --card2: #1c1c1c;
+    --white: #ffffff;
+    --grey: #888;
+    --purple: #7B6EE0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* PARTICLES */
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--red);
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.15; }
+    90% { opacity: 0.05; }
+    100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+  }
+
+  /* MAIN WRAPPER */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 560px;
+    animation: fadeSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .screen.active { display: flex; flex-direction: column; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* LOGO */
+  .logo-m {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 32px;
+  }
+
+  /* INTRO SCREEN */
+  #screen-intro {
+    text-align: center;
+    align-items: center;
+  }
+  .intro-badge {
+    background: var(--red);
+    border-radius: 20px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 40px;
+    box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(247,62,90,0.15);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(247,62,90,0.15); }
+    50% { box-shadow: 0 0 60px rgba(247,62,90,0.5), 0 0 120px rgba(247,62,90,0.2); }
+  }
+  .intro-badge svg { width: 44px; height: 44px; }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 7vw, 52px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+  h1 span { color: var(--red); }
+
+  .subtitle {
+    font-size: 17px;
+    color: var(--grey);
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto 48px;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 18px 48px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 24px var(--red-glow);
+  }
+  .btn-primary:hover {
+    background: var(--red-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(247,62,90,0.4);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .intro-note {
+    margin-top: 24px;
+    font-size: 13px;
+    color: #444;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    margin-bottom: 40px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #444;
+    margin-bottom: 10px;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .progress-track {
+    height: 3px;
+    background: #222;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 8px var(--red-glow);
+  }
+
+  /* QUESTION */
+  .q-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(20px, 4.5vw, 28px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 36px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option {
+    background: var(--card);
+    border: 1.5px solid #222;
+    border-radius: 16px;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+  }
+  .option:hover {
+    border-color: var(--red);
+    background: var(--card2);
+    transform: translateX(4px);
+  }
+  .option.selected {
+    border-color: var(--red);
+    background: rgba(247, 62, 90, 0.08);
+  }
+  .option-emoji {
+    font-size: 22px;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .option-text {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #ddd;
+  }
+  .option.selected .option-text { color: var(--white); }
+
+  /* SORTING ANIMATION SCREEN */
+  #screen-sorting {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+  .sorting-m {
+    width: 120px;
+    height: 120px;
+    background: var(--red);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 40px;
+    animation: sortingPulse 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 60px var(--red-glow), 0 0 120px rgba(247,62,90,0.2);
+  }
+  @keyframes sortingPulse {
+    from { transform: scale(1) rotate(-3deg); box-shadow: 0 0 60px var(--red-glow); }
+    to { transform: scale(1.08) rotate(3deg); box-shadow: 0 0 100px rgba(247,62,90,0.6); }
+  }
+  .sorting-m svg { width: 64px; height: 64px; }
+  .sorting-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .sorting-sub {
+    font-size: 15px;
+    color: var(--grey);
+  }
+  .dots {
+    display: inline-block;
+    animation: dotFlash 1.2s steps(4, end) infinite;
+  }
+  @keyframes dotFlash {
+    0%  { content: ''; }
+    25% { color: transparent; text-shadow: 4px 0 var(--grey), 8px 0 transparent; }
+  }
+
+  /* RESULT SCREEN */
+  #screen-result {
+    text-align: center;
+    align-items: center;
+  }
+
+  .result-badge-wrap {
+    position: relative;
+    margin: 0 auto 40px;
+    width: 140px;
+    height: 140px;
+  }
+  .result-badge-bg {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
+    animation: badgeGlow 2s ease-in-out infinite;
+  }
+  @keyframes badgeGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .result-badge {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    background: var(--red);
+    border-radius: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 8px 48px var(--red-glow);
+    animation: badgeDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transform: scale(0);
+  }
+  @keyframes badgeDrop {
+    from { transform: scale(0) rotate(-10deg); }
+    to { transform: scale(1) rotate(0deg); }
+  }
+  .result-badge-icon { font-size: 40px; }
+  .result-badge-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+  }
+
+  .result-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+    font-weight: 600;
+    animation: fadeSlideIn 0.5s 0.4s both;
+  }
+  .result-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 7vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    animation: fadeSlideIn 0.5s 0.5s both;
+  }
+  .result-desc {
+    font-size: 16px;
+    color: #aaa;
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto 16px;
+    animation: fadeSlideIn 0.5s 0.6s both;
+  }
+  .result-highlight {
+    background: var(--card);
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid var(--red);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.6;
+    text-align: left;
+    animation: fadeSlideIn 0.5s 0.7s both;
+  }
+  .result-highlight strong { color: var(--white); }
+
+  .result-pillars {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    animation: fadeSlideIn 0.5s 0.8s both;
+  }
+  .pillar {
+    background: var(--card2);
+    border: 1px solid #2a2a2a;
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #888;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .cta-wrap {
+    animation: fadeSlideIn 0.5s 0.9s both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .btn-cta {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 20px 52px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 32px var(--red-glow);
+  }
+  .btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(247,62,90,0.45);
+  }
+  .cta-sub {
+    font-size: 12px;
+    color: #444;
+  }
+  .cta-sub span { color: #666; }
+
+  /* DIVIDER */
+  .divider {
+    width: 40px;
+    height: 3px;
+    background: var(--red);
+    border-radius: 100px;
+    margin: 0 auto 32px;
+  }
+
+  /* MOBILE TWEAKS */
+  @media (max-width: 480px) {
+    #app { padding: 20px 16px; align-items: flex-start; padding-top: 40px; }
+    .option { padding: 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div id="app">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-badge">
+      <svg viewBox="0 0 44 44" fill="none">
+        <path d="M6 36V10l16 14L38 10v26" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>The internet<br>got <span>broken.</span><br>Find your place.</h1>
+    <p class="subtitle">7 questions. No ads. No algorithms. Just an honest look at who you are online — and where you belong.</p>
+    <button class="btn-primary" onclick="startGame()">Begin the sorting →</button>
+    <p class="intro-note">Takes about 2 minutes · Made in Europe 🇪🇺</p>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="screen-question">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="q-label">Question 1 of 7</span>
+        <span id="q-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="q-number" id="q-number">01 —</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options-wrap"></div>
+  </div>
+
+  <!-- SORTING -->
+  <div class="screen" id="screen-sorting">
+    <div class="sorting-m">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M8 54V14L32 38L56 14v40" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="sorting-text">Sorting you<span class="dots">...</span></div>
+    <div class="sorting-sub">Finding your place in Monnett</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="result-badge-wrap">
+      <div class="result-badge-bg"></div>
+      <div class="result-badge" id="result-badge">
+        <div class="result-badge-icon" id="result-icon">🧭</div>
+        <div class="result-badge-label">Monnett</div>
+      </div>
+    </div>
+    <div class="result-eyebrow">You've been sorted</div>
+    <div class="result-name" id="result-name">The Signal Seeker</div>
+    <div class="divider"></div>
+    <div class="result-desc" id="result-desc"></div>
+    <div class="result-highlight" id="result-highlight"></div>
+    <div class="result-pillars" id="result-pillars"></div>
+    <div class="cta-wrap">
+      <button class="btn-cta">Claim your badge on Monnett →</button>
+      <div class="cta-sub">Join for free · <span>Membership from €2.99/mo</span> · Made & hosted in Europe 🇪🇺</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── PARTICLES ──────────────────────────────────────────────
+(function() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    p.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      left: ${Math.random() * 100}%;
+      animation-duration: ${Math.random() * 12 + 8}s;
+      animation-delay: ${Math.random() * 10}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// ── QUESTIONS ─────────────────────────────────────────────
+const questions = [
+  {
+    text: "You open your favourite social app. What greets you first?",
+    options: [
+      { emoji: "🎯", text: "An ad for something you mentioned in a conversation yesterday", scores: { noise: 2 } },
+      { emoji: "🌀", text: "A viral video from someone you've never heard of", scores: { noise: 2 } },
+      { emoji: "❤️", text: "A post from a friend you actually know", scores: { connection: 2 } },
+      { emoji: "🔔", text: "A notification that means absolutely nothing to you", scores: { noise: 1, trust: -1 } }
+    ]
+  },
+  {
+    text: "You get a DM from someone you don't know. Your gut reaction is…",
+    options: [
+      { emoji: "🤖", text: "Probably a bot or a scam. I don't even open it.", scores: { trust: 2 } },
+      { emoji: "🤷", text: "Could be real, but I'll ignore it just in case.", scores: { trust: 1 } },
+      { emoji: "👀", text: "I'm curious — I check their profile first.", scores: { connection: 1, explorer: 1 } },
+      { emoji: "🔇", text: "I've turned off DMs from strangers entirely.", scores: { noise: 1, trust: 1 } }
+    ]
+  },
+  {
+    text: "Something beautiful happens in your day. You feel like sharing it. Who do you picture seeing it?",
+    options: [
+      { emoji: "🫂", text: "My close friends — the people who actually know me.", scores: { connection: 2 } },
+      { emoji: "📢", text: "Anyone following me — the more reactions the better.", scores: { noise: -1 } },
+      { emoji: "📓", text: "No one. I just want to preserve the memory for myself.", scores: { memory: 2 } },
+      { emoji: "🌍", text: "Real people nearby who might relate to this moment.", scores: { explorer: 2 } }
+    ]
+  },
+  {
+    text: "You arrive in a new city. What do you wish your phone could actually help you with?",
+    options: [
+      { emoji: "📍", text: "See what real locals — not influencers — are up to nearby.", scores: { explorer: 2, trust: 1 } },
+      { emoji: "⭐", text: "Find honest reviews from humans, not SEO-farmed content.", scores: { trust: 2 } },
+      { emoji: "🤝", text: "Meet someone with similar interests who happens to be around.", scores: { connection: 2 } },
+      { emoji: "🗺️", text: "Honestly? I just use Google Maps and keep to myself.", scores: { noise: 1 } }
+    ]
+  },
+  {
+    text: "Which of these bothers you most about social media in 2025?",
+    options: [
+      { emoji: "🧠", text: "I genuinely can't tell what's AI-generated and what's real anymore.", scores: { trust: 3 } },
+      { emoji: "💸", text: "Every app is secretly selling my attention to advertisers.", scores: { noise: 2, trust: 1 } },
+      { emoji: "💔", text: "I keep missing posts from people I actually care about.", scores: { connection: 2 } },
+      { emoji: "🎰", text: "It's designed like a casino — to keep me scrolling, not connecting.", scores: { noise: 2, memory: 1 } }
+    ]
+  },
+  {
+    text: "You discover an app stores all your private messages on servers with zero privacy protections. You…",
+    options: [
+      { emoji: "🗑️", text: "Delete it immediately. I don't negotiate with my privacy.", scores: { trust: 3 } },
+      { emoji: "😬", text: "Feel uneasy, but I probably won't do anything about it.", scores: { trust: 1 } },
+      { emoji: "🇪🇺", text: "Start looking for a European alternative that actually respects me.", scores: { trust: 2, connection: 1 } },
+      { emoji: "🤔", text: "Honestly never thought about where my data lives.", scores: { explorer: 1 } }
+    ]
+  },
+  {
+    text: "Be honest — what would make you actually love an app on your phone?",
+    options: [
+      { emoji: "🏠", text: "One clean place for chat, people, discovery. No chaos.", scores: { explorer: 2, noise: 1 } },
+      { emoji: "🤫", text: "A quiet corner of the internet where only real humans exist.", scores: { trust: 2, connection: 1 } },
+      { emoji: "⏳", text: "Something that feels like the early internet — curious, human, real.", scores: { memory: 2, trust: 1 } },
+      { emoji: "🧘", text: "An app that respects my time and doesn't try to addict me.", scores: { noise: 2, connection: 1 } }
+    ]
+  }
+];
+
+// ── BADGE TYPES ───────────────────────────────────────────
+const badges = {
+  noise: {
+    icon: "🧭",
+    name: "The Signal Seeker",
+    desc: "You've been burned by the noise for too long. You know the difference between content that's made to manipulate you and a moment that's genuinely worth your time. You don't need an algorithm telling you what matters — you already know.",
+    highlight: "<strong>Monnett was built for you.</strong> No recommendations unless you ask. No ads. No AI slop. Just the people you chose to follow, and the content they actually chose to share. Open the app, catch up, close it. That's it.",
+    pillars: ["No ads", "No algorithm", "Friends-only feed", "You control the signal"]
+  },
+  connection: {
+    icon: "🤝",
+    name: "The Real One",
+    desc: "You show up authentically online and expect the same back. You're not performing for an audience — you're sharing with people who matter. The likes from strangers never meant anything to you. The reply from a friend always did.",
+    highlight: "<strong>On Monnett, your friends are the feed.</strong> You open the app when you're curious what they're up to, or when something happens that you want to share with the people who actually know you. It's social media that works like real friendship.",
+    pillars: ["Friends-first feed", "Real human connections", "End-to-end encrypted chat", "Share with people who care"]
+  },
+  memory: {
+    icon: "🏡",
+    name: "The Memory Keeper",
+    desc: "You post to preserve, not to perform. Every shared moment is a small entry in the story of your life. You hate how other platforms let everything vanish into the void — or worse, bury it under algorithmic chaos.",
+    highlight: "<strong>On Monnett, content accumulates.</strong> Your profile is a month-by-month diary of your lived experience. Posts don't disappear. Your friends' moments stay. Over time, Monnett becomes the shared record of a life well lived — together.",
+    pillars: ["Monthly diary layout", "Posts that stay", "Your social memory", "Shared moments, preserved"]
+  },
+  explorer: {
+    icon: "🗺️",
+    name: "The Local Explorer",
+    desc: "You want to discover real things — real people nearby, real places, real events happening in your world. Not curated tourist traps or influencer hotspots, but what actual humans around you are experiencing right now.",
+    highlight: "<strong>Monnett's Discover is GPS-anchored.</strong> Every public post is tagged to a real location, verified. No bots, no fake locations, no manufactured content. Just real people, real places, local to national to global — your choice, when you want it.",
+    pillars: ["GPS-verified content", "Local to global discovery", "Real people nearby", "No fake locations"]
+  },
+  trust: {
+    icon: "🛡️",
+    name: "The Conscious One",
+    desc: "You've started to question everything online — and rightly so. Who's real? Where's your data? Who profits from your attention? You're not paranoid, you're awake. And you've been waiting for something built with that in mind.",
+    highlight: "<strong>Monnett is made and hosted in Europe.</strong> Public posts require GPS verification and a symbolic €4/year — enough to confirm a real human, not a bot farm. End-to-end encrypted chat. No tracking. No ad targeting. Just a network you can actually trust.",
+    pillars: ["Made & hosted in Europe 🇪🇺", "Proof of human (€4/yr)", "E2E encrypted chat", "Zero tracking"]
+  }
+};
+
+// ── STATE ─────────────────────────────────────────────────
+let currentQ = 0;
+let selected = null;
+let scores = { noise: 0, connection: 0, memory: 0, explorer: 0, trust: 0 };
+
+// ── HELPERS ───────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'flex';
+  requestAnimationFrame(() => {
+    el.style.animation = 'none';
+    requestAnimationFrame(() => {
+      el.style.animation = '';
+      el.classList.add('active');
+    });
+  });
+}
+
+// ── GAME FLOW ─────────────────────────────────────────────
+function startGame() {
+  currentQ = 0;
+  scores = { noise: 0, connection: 0, memory: 0, explorer: 0, trust: 0 };
+  renderQuestion();
+  showScreen('screen-question');
+}
+
+function renderQuestion() {
+  selected = null;
+  const q = questions[currentQ];
+  const pct = Math.round((currentQ / questions.length) * 100);
+
+  document.getElementById('q-label').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById('q-pct').textContent = `${pct}%`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-number').textContent = String(currentQ + 1).padStart(2, '0') + ' —';
+  document.getElementById('q-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="option-emoji">${opt.emoji}</span><span class="option-text">${opt.text}</span>`;
+    div.style.animationDelay = (i * 0.07) + 's';
+    div.style.animation = 'fadeSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) both';
+    div.onclick = () => selectOption(div, i);
+    wrap.appendChild(div);
+  });
+}
+
+function selectOption(el, idx) {
+  if (selected !== null) return;
+  selected = idx;
+
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+
+  // Apply scores
+  const optScores = questions[currentQ].options[idx].scores;
+  Object.entries(optScores).forEach(([key, val]) => {
+    scores[key] = (scores[key] || 0) + val;
+  });
+
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showSorting();
+    }
+  }, 420);
+}
+
+function showSorting() {
+  showScreen('screen-sorting');
+  setTimeout(showResult, 2800);
+}
+
+function showResult() {
+  // Find winner
+  const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+  const badge = badges[winner];
+
+  document.getElementById('result-icon').textContent = badge.icon;
+  document.getElementById('result-name').textContent = badge.name;
+  document.getElementById('result-desc').textContent = badge.desc;
+  document.getElementById('result-highlight').innerHTML = badge.highlight;
+
+  const pillarsWrap = document.getElementById('result-pillars');
+  pillarsWrap.innerHTML = badge.pillars.map(p => `<div class="pillar">${p}</div>`).join('');
+
+  showScreen('screen-result');
+}
+</script>
+</body>
+</html>
