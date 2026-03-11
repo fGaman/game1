@@ -2,735 +2,716 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Monnett — Find Your Place</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red: #F73E5A;
-    --red-dark: #c42d46;
-    --red-glow: rgba(247, 62, 90, 0.3);
-    --black: #0a0a0a;
-    --card: #141414;
-    --card2: #1c1c1c;
-    --white: #ffffff;
-    --grey: #888;
-    --purple: #7B6EE0;
-  }
+:root {
+  --red: #F73E5A;
+  --red-dark: #c42d46;
+  --red-glow: rgba(247,62,90,0.35);
+  --black: #0c0c0c;
+  --card: #161616;
+  --card2: #1e1e1e;
+  --white: #ffffff;
+  --grey: #777;
+  --purple: #8B7FE8;
+  --yellow: #FFD600;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+#particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.pt { position:absolute; border-radius:50%; background:var(--red); opacity:0; animation:floatUp linear infinite; }
+@keyframes floatUp {
+  0%  { transform:translateY(105vh) scale(0); opacity:0; }
+  10% { opacity:0.1; }
+  90% { opacity:0.03; }
+  100%{ transform:translateY(-10vh) scale(1); opacity:0; }
+}
 
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+#app { position:relative; z-index:1; min-height:100dvh; display:flex; flex-direction:column; align-items:center; }
 
-  /* PARTICLES */
-  #particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--red);
-    opacity: 0;
-    animation: floatUp linear infinite;
-  }
-  @keyframes floatUp {
-    0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 0.15; }
-    90% { opacity: 0.05; }
-    100% { transform: translateY(-20vh) scale(1); opacity: 0; }
-  }
+.screen { display:none; width:100%; max-width:480px; flex-direction:column; align-items:center; min-height:100dvh; padding:0 0 32px; animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both; }
+.screen.active { display:flex; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
-  /* MAIN WRAPPER */
-  #app {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
+/* INTRO */
+#screen-intro { justify-content:center; padding:48px 28px; text-align:center; gap:0; }
+.intro-logo { width:76px; height:76px; background:var(--red); border-radius:22px; display:flex; align-items:center; justify-content:center; margin:0 auto 40px; box-shadow:0 0 48px var(--red-glow); animation:logoPulse 3s ease-in-out infinite; }
+@keyframes logoPulse { 0%,100%{box-shadow:0 0 48px var(--red-glow)} 50%{box-shadow:0 0 80px rgba(247,62,90,.55)} }
+.intro-title { font-family:'Syne',sans-serif; font-size:clamp(32px,9vw,48px); font-weight:800; line-height:1.06; letter-spacing:-1.5px; margin-bottom:20px; }
+.intro-title span { color:var(--red); }
+.intro-sub { font-size:15px; color:var(--grey); line-height:1.65; max-width:320px; margin:0 auto 44px; }
+.btn-start { background:var(--red); color:#fff; border:none; border-radius:100px; padding:18px 48px; font-family:'Syne',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 28px var(--red-glow); transition:all .2s; width:100%; max-width:300px; }
+.btn-start:active { transform:scale(.97); }
+.intro-note { margin-top:20px; font-size:12px; color:#3a3a3a; }
 
-  /* SCREENS */
-  .screen {
-    display: none;
-    width: 100%;
-    max-width: 560px;
-    animation: fadeSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  .screen.active { display: flex; flex-direction: column; }
+/* QUESTION */
+#screen-question { padding:0; gap:0; }
+.q-header { width:100%; padding:20px 20px 14px; flex-shrink:0; }
+.progress-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.progress-num { font-family:'Syne',sans-serif; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--red); font-weight:600; }
+.progress-pct { font-size:11px; color:#444; font-family:'Syne',sans-serif; }
+.progress-track { height:2px; background:#222; border-radius:100px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--red); border-radius:100px; transition:width .5s cubic-bezier(.22,1,.36,1); box-shadow:0 0 6px var(--red-glow); }
+.q-text-wrap { padding:4px 20px 18px; flex-shrink:0; }
+.q-text { font-family:'Syne',sans-serif; font-size:clamp(16px,4.5vw,21px); font-weight:700; line-height:1.25; letter-spacing:-.3px; }
 
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(28px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+/* 2x2 GRID */
+.options-grid { width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 12px 12px; flex:1; }
+.opt-card { background:var(--card); border:2px solid #1f1f1f; border-radius:20px; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:border-color .18s,transform .18s; animation:fadeUp .4s cubic-bezier(.22,1,.36,1) both; }
+.opt-card:nth-child(1){animation-delay:.05s}
+.opt-card:nth-child(2){animation-delay:.10s}
+.opt-card:nth-child(3){animation-delay:.15s}
+.opt-card:nth-child(4){animation-delay:.20s}
+.opt-card:active { transform:scale(.96); }
+.opt-card.selected { border-color:var(--red); background:#1a0a0d; }
+.opt-illus { width:100%; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#111; flex-shrink:0; }
+.opt-illus svg { width:100%; height:100%; display:block; }
+.opt-label { padding:8px 11px 10px; font-family:'Syne',sans-serif; font-size:clamp(15px,4vw,18px); font-weight:700; line-height:1.25; letter-spacing:-.3px; color:#ccc; flex:0 0 auto; }
+.opt-card.selected .opt-label { color:#fff; }
+.btn-restart { background:transparent; color:#444; border:1.5px solid #2a2a2a; border-radius:100px; padding:14px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; margin-top:4px; }
+.btn-restart:active { transform:scale(.98); color:#888; border-color:#444; }
 
-  /* LOGO */
-  .logo-m {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 32px;
-  }
+/* SORTING */
+#screen-sorting { justify-content:center; text-align:center; padding:48px 28px; }
+.sorting-badge { width:110px; height:110px; background:var(--red); border-radius:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 36px; animation:sortSpin 1.2s ease-in-out infinite alternate; box-shadow:0 0 60px var(--red-glow); }
+@keyframes sortSpin { from{transform:scale(1) rotate(-5deg)} to{transform:scale(1.1) rotate(5deg);box-shadow:0 0 100px rgba(247,62,90,.6)} }
+.sorting-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:700; margin-bottom:10px; }
+.sorting-sub { font-size:14px; color:var(--grey); }
+.dots { animation:blink 1.1s steps(3,end) infinite; }
+@keyframes blink { 0%,100%{opacity:1} 33%{opacity:0} }
 
-  /* INTRO SCREEN */
-  #screen-intro {
-    text-align: center;
-    align-items: center;
-  }
-  .intro-badge {
-    background: var(--red);
-    border-radius: 20px;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 40px;
-    box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(247,62,90,0.15);
-    animation: pulse 3s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(247,62,90,0.15); }
-    50% { box-shadow: 0 0 60px rgba(247,62,90,0.5), 0 0 120px rgba(247,62,90,0.2); }
-  }
-  .intro-badge svg { width: 44px; height: 44px; }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(32px, 7vw, 52px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -1.5px;
-    margin-bottom: 16px;
-  }
-  h1 span { color: var(--red); }
-
-  .subtitle {
-    font-size: 17px;
-    color: var(--grey);
-    line-height: 1.6;
-    max-width: 400px;
-    margin: 0 auto 48px;
-  }
-
-  .btn-primary {
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 18px 48px;
-    border-radius: 100px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 24px var(--red-glow);
-  }
-  .btn-primary:hover {
-    background: var(--red-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(247,62,90,0.4);
-  }
-  .btn-primary:active { transform: translateY(0); }
-
-  .intro-note {
-    margin-top: 24px;
-    font-size: 13px;
-    color: #444;
-  }
-
-  /* PROGRESS BAR */
-  .progress-wrap {
-    margin-bottom: 40px;
-  }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #444;
-    margin-bottom: 10px;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .progress-track {
-    height: 3px;
-    background: #222;
-    border-radius: 100px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--red);
-    border-radius: 100px;
-    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 0 8px var(--red-glow);
-  }
-
-  /* QUESTION */
-  .q-number {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-  .q-text {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(20px, 4.5vw, 28px);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
-    margin-bottom: 36px;
-  }
-
-  /* OPTIONS */
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .option {
-    background: var(--card);
-    border: 1.5px solid #222;
-    border-radius: 16px;
-    padding: 18px 22px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-align: left;
-  }
-  .option:hover {
-    border-color: var(--red);
-    background: var(--card2);
-    transform: translateX(4px);
-  }
-  .option.selected {
-    border-color: var(--red);
-    background: rgba(247, 62, 90, 0.08);
-  }
-  .option-emoji {
-    font-size: 22px;
-    width: 36px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .option-text {
-    font-size: 15px;
-    line-height: 1.4;
-    color: #ddd;
-  }
-  .option.selected .option-text { color: var(--white); }
-
-  /* SORTING ANIMATION SCREEN */
-  #screen-sorting {
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-  }
-  .sorting-m {
-    width: 120px;
-    height: 120px;
-    background: var(--red);
-    border-radius: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 40px;
-    animation: sortingPulse 0.8s ease-in-out infinite alternate;
-    box-shadow: 0 0 60px var(--red-glow), 0 0 120px rgba(247,62,90,0.2);
-  }
-  @keyframes sortingPulse {
-    from { transform: scale(1) rotate(-3deg); box-shadow: 0 0 60px var(--red-glow); }
-    to { transform: scale(1.08) rotate(3deg); box-shadow: 0 0 100px rgba(247,62,90,0.6); }
-  }
-  .sorting-m svg { width: 64px; height: 64px; }
-  .sorting-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 12px;
-  }
-  .sorting-sub {
-    font-size: 15px;
-    color: var(--grey);
-  }
-  .dots {
-    display: inline-block;
-    animation: dotFlash 1.2s steps(4, end) infinite;
-  }
-  @keyframes dotFlash {
-    0%  { content: ''; }
-    25% { color: transparent; text-shadow: 4px 0 var(--grey), 8px 0 transparent; }
-  }
-
-  /* RESULT SCREEN */
-  #screen-result {
-    text-align: center;
-    align-items: center;
-  }
-
-  .result-badge-wrap {
-    position: relative;
-    margin: 0 auto 40px;
-    width: 140px;
-    height: 140px;
-  }
-  .result-badge-bg {
-    position: absolute;
-    inset: -20px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
-    animation: badgeGlow 2s ease-in-out infinite;
-  }
-  @keyframes badgeGlow {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
-  }
-  .result-badge {
-    position: relative;
-    width: 140px;
-    height: 140px;
-    background: var(--red);
-    border-radius: 38px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    box-shadow: 0 8px 48px var(--red-glow);
-    animation: badgeDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    transform: scale(0);
-  }
-  @keyframes badgeDrop {
-    from { transform: scale(0) rotate(-10deg); }
-    to { transform: scale(1) rotate(0deg); }
-  }
-  .result-badge-icon { font-size: 40px; }
-  .result-badge-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.7);
-    font-weight: 600;
-  }
-
-  .result-eyebrow {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 10px;
-    font-weight: 600;
-    animation: fadeSlideIn 0.5s 0.4s both;
-  }
-  .result-name {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 7vw, 44px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 20px;
-    line-height: 1.1;
-    animation: fadeSlideIn 0.5s 0.5s both;
-  }
-  .result-desc {
-    font-size: 16px;
-    color: #aaa;
-    line-height: 1.7;
-    max-width: 420px;
-    margin: 0 auto 16px;
-    animation: fadeSlideIn 0.5s 0.6s both;
-  }
-  .result-highlight {
-    background: var(--card);
-    border: 1px solid #2a2a2a;
-    border-left: 3px solid var(--red);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin: 24px 0;
-    font-size: 14px;
-    color: #ccc;
-    line-height: 1.6;
-    text-align: left;
-    animation: fadeSlideIn 0.5s 0.7s both;
-  }
-  .result-highlight strong { color: var(--white); }
-
-  .result-pillars {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 40px;
-    animation: fadeSlideIn 0.5s 0.8s both;
-  }
-  .pillar {
-    background: var(--card2);
-    border: 1px solid #2a2a2a;
-    border-radius: 100px;
-    padding: 8px 16px;
-    font-size: 12px;
-    color: #888;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: 0.5px;
-  }
-
-  .cta-wrap {
-    animation: fadeSlideIn 0.5s 0.9s both;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .btn-cta {
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 20px 52px;
-    border-radius: 100px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 17px;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 32px var(--red-glow);
-  }
-  .btn-cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(247,62,90,0.45);
-  }
-  .cta-sub {
-    font-size: 12px;
-    color: #444;
-  }
-  .cta-sub span { color: #666; }
-
-  /* DIVIDER */
-  .divider {
-    width: 40px;
-    height: 3px;
-    background: var(--red);
-    border-radius: 100px;
-    margin: 0 auto 32px;
-  }
-
-  /* MOBILE TWEAKS */
-  @media (max-width: 480px) {
-    #app { padding: 20px 16px; align-items: flex-start; padding-top: 40px; }
-    .option { padding: 16px 18px; }
-  }
+/* RESULT */
+#screen-result { justify-content:flex-start; text-align:center; padding:0 0 48px; }
+.result-hero { width:100%; background:var(--red); padding:52px 24px 40px; display:flex; flex-direction:column; align-items:center; position:relative; overflow:hidden; }
+.result-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.12) 0%,transparent 70%); }
+.result-icon { font-size:56px; margin-bottom:12px; animation:badgeDrop .6s cubic-bezier(.34,1.56,.64,1) both; position:relative; z-index:1; }
+@keyframes badgeDrop { from{transform:scale(0) rotate(-15deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.result-eyebrow { font-family:'Syne',sans-serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.65); margin-bottom:8px; animation:fadeUp .4s .3s both; position:relative; z-index:1; }
+.result-name { font-family:'Syne',sans-serif; font-size:clamp(28px,8vw,40px); font-weight:800; letter-spacing:-1px; line-height:1.05; animation:fadeUp .4s .4s both; position:relative; z-index:1; }
+.result-body { padding:28px 22px 0; display:flex; flex-direction:column; gap:18px; width:100%; }
+.result-desc { font-size:15px; color:#aaa; line-height:1.7; animation:fadeUp .4s .5s both; }
+.result-card { background:var(--card); border:1px solid #232323; border-left:3px solid var(--red); border-radius:14px; padding:16px 18px; font-size:14px; color:#ccc; line-height:1.65; text-align:left; animation:fadeUp .4s .6s both; }
+.result-card strong { color:#fff; }
+.result-pillars { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start; animation:fadeUp .4s .7s both; }
+.pill { background:#1a1a1a; border:1px solid #282828; border-radius:100px; padding:7px 14px; font-size:11.5px; color:#777; font-family:'Syne',sans-serif; }
+.cta-section { padding:24px 22px 0; width:100%; animation:fadeUp .4s .85s both; }
+.btn-cta { background:var(--red); color:#fff; border:none; border-radius:100px; padding:20px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 32px var(--red-glow); transition:all .2s; margin-bottom:14px; }
+.btn-cta:active { transform:scale(.98); }
+.cta-note { font-size:12px; color:#3a3a3a; text-align:center; }
+.cta-note span { color:#555; }
 </style>
 </head>
 <body>
-
 <div id="particles"></div>
-
 <div id="app">
 
-  <!-- INTRO -->
-  <div class="screen active" id="screen-intro">
-    <div class="intro-badge">
-      <svg viewBox="0 0 44 44" fill="none">
-        <path d="M6 36V10l16 14L38 10v26" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <h1>The internet<br>got <span>broken.</span><br>Find your place.</h1>
-    <p class="subtitle">7 questions. No ads. No algorithms. Just an honest look at who you are online — and where you belong.</p>
-    <button class="btn-primary" onclick="startGame()">Begin the sorting →</button>
-    <p class="intro-note">Takes about 2 minutes · Made in Europe 🇪🇺</p>
+<!-- INTRO -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-logo">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M5 37V13L22 29L39 13V37" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </div>
-
-  <!-- QUESTION -->
-  <div class="screen" id="screen-question">
-    <div class="progress-wrap">
-      <div class="progress-label">
-        <span id="q-label">Question 1 of 7</span>
-        <span id="q-pct">0%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-    </div>
-    <div class="q-number" id="q-number">01 —</div>
-    <div class="q-text" id="q-text"></div>
-    <div class="options" id="options-wrap"></div>
-  </div>
-
-  <!-- SORTING -->
-  <div class="screen" id="screen-sorting">
-    <div class="sorting-m">
-      <svg viewBox="0 0 64 64" fill="none">
-        <path d="M8 54V14L32 38L56 14v40" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="sorting-text">Sorting you<span class="dots">...</span></div>
-    <div class="sorting-sub">Finding your place in Monnett</div>
-  </div>
-
-  <!-- RESULT -->
-  <div class="screen" id="screen-result">
-    <div class="result-badge-wrap">
-      <div class="result-badge-bg"></div>
-      <div class="result-badge" id="result-badge">
-        <div class="result-badge-icon" id="result-icon">🧭</div>
-        <div class="result-badge-label">Monnett</div>
-      </div>
-    </div>
-    <div class="result-eyebrow">You've been sorted</div>
-    <div class="result-name" id="result-name">The Signal Seeker</div>
-    <div class="divider"></div>
-    <div class="result-desc" id="result-desc"></div>
-    <div class="result-highlight" id="result-highlight"></div>
-    <div class="result-pillars" id="result-pillars"></div>
-    <div class="cta-wrap">
-      <button class="btn-cta">Claim your badge on Monnett →</button>
-      <div class="cta-sub">Join for free · <span>Membership from €2.99/mo</span> · Made & hosted in Europe 🇪🇺</div>
-    </div>
-  </div>
-
+  <h1 class="intro-title">The internet<br>got <span>broken.</span><br>Find your place.</h1>
+  <p class="intro-sub">7 quick questions. No ads, no algorithm. Just an honest look at who you are online — and where you belong.</p>
+  <button class="btn-start" onclick="startGame()">Begin the sorting →</button>
+  <p class="intro-note">~2 minutes · Made &amp; hosted in Europe 🇪🇺</p>
 </div>
 
+<!-- QUESTION -->
+<div class="screen" id="screen-question">
+  <div class="q-header">
+    <div class="progress-row">
+      <span class="progress-num" id="q-label">01 of 07</span>
+      <span class="progress-pct" id="q-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="q-text-wrap"><div class="q-text" id="q-text"></div></div>
+  <div class="options-grid" id="options-grid"></div>
+</div>
+
+<!-- SORTING -->
+<div class="screen" id="screen-sorting">
+  <div class="sorting-badge">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <path d="M7 50V16L30 38L53 16V50" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="sorting-title">Sorting you<span class="dots">...</span></div>
+  <div class="sorting-sub">Finding your place in Monnett</div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="screen-result">
+  <div class="result-hero">
+    <div class="result-icon" id="result-icon">🧭</div>
+    <div class="result-eyebrow">You've been sorted</div>
+    <div class="result-name" id="result-name">The Signal Seeker</div>
+  </div>
+  <div class="result-body">
+    <div class="result-desc" id="result-desc"></div>
+    <div class="result-card" id="result-card"></div>
+    <div class="result-pillars" id="result-pillars"></div>
+  </div>
+  <div class="cta-section">
+    <button class="btn-cta">Add my badge &amp; join Monnett →</button>
+    <button class="btn-restart" onclick="startGame()">↩ Sort me again</button>
+    <div class="cta-note">Free to join · <span>Membership from €2.99/mo</span> · 🇪🇺 Europe</div>
+  </div>
+</div>
+
+</div>
 <script>
-// ── PARTICLES ──────────────────────────────────────────────
-(function() {
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 2;
-    p.style.cssText = `
-      width: ${size}px; height: ${size}px;
-      left: ${Math.random() * 100}%;
-      animation-duration: ${Math.random() * 12 + 8}s;
-      animation-delay: ${Math.random() * 10}s;
-    `;
-    container.appendChild(p);
+// PARTICLES
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div'); p.className='pt';
+    const s=Math.random()*4+2;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*14+8}s;animation-delay:${Math.random()*12}s`;
+    c.appendChild(p);
   }
 })();
 
-// ── QUESTIONS ─────────────────────────────────────────────
-const questions = [
-  {
-    text: "You open your favourite social app. What greets you first?",
-    options: [
-      { emoji: "🎯", text: "An ad for something you mentioned in a conversation yesterday", scores: { noise: 2 } },
-      { emoji: "🌀", text: "A viral video from someone you've never heard of", scores: { noise: 2 } },
-      { emoji: "❤️", text: "A post from a friend you actually know", scores: { connection: 2 } },
-      { emoji: "🔔", text: "A notification that means absolutely nothing to you", scores: { noise: 1, trust: -1 } }
-    ]
-  },
-  {
-    text: "You get a DM from someone you don't know. Your gut reaction is…",
-    options: [
-      { emoji: "🤖", text: "Probably a bot or a scam. I don't even open it.", scores: { trust: 2 } },
-      { emoji: "🤷", text: "Could be real, but I'll ignore it just in case.", scores: { trust: 1 } },
-      { emoji: "👀", text: "I'm curious — I check their profile first.", scores: { connection: 1, explorer: 1 } },
-      { emoji: "🔇", text: "I've turned off DMs from strangers entirely.", scores: { noise: 1, trust: 1 } }
-    ]
-  },
-  {
-    text: "Something beautiful happens in your day. You feel like sharing it. Who do you picture seeing it?",
-    options: [
-      { emoji: "🫂", text: "My close friends — the people who actually know me.", scores: { connection: 2 } },
-      { emoji: "📢", text: "Anyone following me — the more reactions the better.", scores: { noise: -1 } },
-      { emoji: "📓", text: "No one. I just want to preserve the memory for myself.", scores: { memory: 2 } },
-      { emoji: "🌍", text: "Real people nearby who might relate to this moment.", scores: { explorer: 2 } }
-    ]
-  },
-  {
-    text: "You arrive in a new city. What do you wish your phone could actually help you with?",
-    options: [
-      { emoji: "📍", text: "See what real locals — not influencers — are up to nearby.", scores: { explorer: 2, trust: 1 } },
-      { emoji: "⭐", text: "Find honest reviews from humans, not SEO-farmed content.", scores: { trust: 2 } },
-      { emoji: "🤝", text: "Meet someone with similar interests who happens to be around.", scores: { connection: 2 } },
-      { emoji: "🗺️", text: "Honestly? I just use Google Maps and keep to myself.", scores: { noise: 1 } }
-    ]
-  },
-  {
-    text: "Which of these bothers you most about social media in 2025?",
-    options: [
-      { emoji: "🧠", text: "I genuinely can't tell what's AI-generated and what's real anymore.", scores: { trust: 3 } },
-      { emoji: "💸", text: "Every app is secretly selling my attention to advertisers.", scores: { noise: 2, trust: 1 } },
-      { emoji: "💔", text: "I keep missing posts from people I actually care about.", scores: { connection: 2 } },
-      { emoji: "🎰", text: "It's designed like a casino — to keep me scrolling, not connecting.", scores: { noise: 2, memory: 1 } }
-    ]
-  },
-  {
-    text: "You discover an app stores all your private messages on servers with zero privacy protections. You…",
-    options: [
-      { emoji: "🗑️", text: "Delete it immediately. I don't negotiate with my privacy.", scores: { trust: 3 } },
-      { emoji: "😬", text: "Feel uneasy, but I probably won't do anything about it.", scores: { trust: 1 } },
-      { emoji: "🇪🇺", text: "Start looking for a European alternative that actually respects me.", scores: { trust: 2, connection: 1 } },
-      { emoji: "🤔", text: "Honestly never thought about where my data lives.", scores: { explorer: 1 } }
-    ]
-  },
-  {
-    text: "Be honest — what would make you actually love an app on your phone?",
-    options: [
-      { emoji: "🏠", text: "One clean place for chat, people, discovery. No chaos.", scores: { explorer: 2, noise: 1 } },
-      { emoji: "🤫", text: "A quiet corner of the internet where only real humans exist.", scores: { trust: 2, connection: 1 } },
-      { emoji: "⏳", text: "Something that feels like the early internet — curious, human, real.", scores: { memory: 2, trust: 1 } },
-      { emoji: "🧘", text: "An app that respects my time and doesn't try to addict me.", scores: { noise: 2, connection: 1 } }
-    ]
-  }
-];
+// SVG ILLUSTRATIONS — flat bold style matching your brand kit
+function mBg(color){return `<path d="M0,200 Q0,10 80,0 L220,0 Q300,10 300,200 Q300,290 220,270 L150,255 L80,270 Q0,290 0,200Z" fill="${color}"/>`;}
 
-// ── BADGE TYPES ───────────────────────────────────────────
-const badges = {
-  noise: {
-    icon: "🧭",
-    name: "The Signal Seeker",
-    desc: "You've been burned by the noise for too long. You know the difference between content that's made to manipulate you and a moment that's genuinely worth your time. You don't need an algorithm telling you what matters — you already know.",
-    highlight: "<strong>Monnett was built for you.</strong> No recommendations unless you ask. No ads. No AI slop. Just the people you chose to follow, and the content they actually chose to share. Open the app, catch up, close it. That's it.",
-    pillars: ["No ads", "No algorithm", "Friends-only feed", "You control the signal"]
-  },
-  connection: {
-    icon: "🤝",
-    name: "The Real One",
-    desc: "You show up authentically online and expect the same back. You're not performing for an audience — you're sharing with people who matter. The likes from strangers never meant anything to you. The reply from a friend always did.",
-    highlight: "<strong>On Monnett, your friends are the feed.</strong> You open the app when you're curious what they're up to, or when something happens that you want to share with the people who actually know you. It's social media that works like real friendship.",
-    pillars: ["Friends-first feed", "Real human connections", "End-to-end encrypted chat", "Share with people who care"]
-  },
-  memory: {
-    icon: "🏡",
-    name: "The Memory Keeper",
-    desc: "You post to preserve, not to perform. Every shared moment is a small entry in the story of your life. You hate how other platforms let everything vanish into the void — or worse, bury it under algorithmic chaos.",
-    highlight: "<strong>On Monnett, content accumulates.</strong> Your profile is a month-by-month diary of your lived experience. Posts don't disappear. Your friends' moments stay. Over time, Monnett becomes the shared record of a life well lived — together.",
-    pillars: ["Monthly diary layout", "Posts that stay", "Your social memory", "Shared moments, preserved"]
-  },
-  explorer: {
-    icon: "🗺️",
-    name: "The Local Explorer",
-    desc: "You want to discover real things — real people nearby, real places, real events happening in your world. Not curated tourist traps or influencer hotspots, but what actual humans around you are experiencing right now.",
-    highlight: "<strong>Monnett's Discover is GPS-anchored.</strong> Every public post is tagged to a real location, verified. No bots, no fake locations, no manufactured content. Just real people, real places, local to national to global — your choice, when you want it.",
-    pillars: ["GPS-verified content", "Local to global discovery", "Real people nearby", "No fake locations"]
-  },
-  trust: {
-    icon: "🛡️",
-    name: "The Conscious One",
-    desc: "You've started to question everything online — and rightly so. Who's real? Where's your data? Who profits from your attention? You're not paranoid, you're awake. And you've been waiting for something built with that in mind.",
-    highlight: "<strong>Monnett is made and hosted in Europe.</strong> Public posts require GPS verification and a symbolic €4/year — enough to confirm a real human, not a bot farm. End-to-end encrypted chat. No tracking. No ad targeting. Just a network you can actually trust.",
-    pillars: ["Made & hosted in Europe 🇪🇺", "Proof of human (€4/yr)", "E2E encrypted chat", "Zero tracking"]
-  }
+const SVG={
+q1_ad:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1a2e')}
+  <rect x="95" y="55" width="110" height="180" rx="18" fill="#111" stroke="#2a2a3a" stroke-width="2"/>
+  <rect x="105" y="68" width="90" height="142" rx="10" fill="#0d0d18"/>
+  <rect x="105" y="68" width="90" height="38" rx="6" fill="#F73E5A"/>
+  <text x="150" y="92" text-anchor="middle" font-size="13" fill="white" font-family="sans-serif" font-weight="bold">📢 AD</text>
+  <rect x="113" y="114" width="55" height="7" rx="3.5" fill="#2a2a40"/>
+  <rect x="113" y="126" width="72" height="7" rx="3.5" fill="#222232"/>
+  <rect x="113" y="138" width="60" height="7" rx="3.5" fill="#222232"/>
+  <ellipse cx="165" cy="178" rx="24" ry="15" fill="none" stroke="#F73E5A" stroke-width="3"/>
+  <circle cx="165" cy="178" r="8" fill="#F73E5A"/>
+  <circle cx="168" cy="175" r="3" fill="white"/>
+  <text x="150" y="215" text-anchor="middle" font-size="10" fill="#F73E5A" font-family="sans-serif">tracking you</text>
+</svg>`,
+
+q1_algo:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#0a2a1a')}
+  <circle cx="150" cy="148" r="88" fill="none" stroke="#1a4a2a" stroke-width="2"/>
+  <circle cx="150" cy="148" r="62" fill="none" stroke="#1a5a30" stroke-width="2"/>
+  <circle cx="150" cy="148" r="36" fill="none" stroke="#2a7a40" stroke-width="2"/>
+  <path d="M150,68 A80,80 0 1,1 72,148" stroke="#4CAF50" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <polygon points="70,137 58,157 82,152" fill="#4CAF50"/>
+  <circle cx="150" cy="148" r="30" fill="#5D4037"/>
+  <circle cx="140" cy="143" r="4.5" fill="#222"/>
+  <circle cx="160" cy="143" r="4.5" fill="#222"/>
+  <path d="M140,158 Q150,165 160,158" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <text x="195" y="100" font-size="30" fill="#4CAF50" font-family="sans-serif" font-weight="bold">?</text>
+</svg>`,
+
+q1_friend:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="75" y="58" width="150" height="168" rx="20" fill="white"/>
+  <rect x="85" y="68" width="130" height="92" rx="12" fill="#FFD600"/>
+  <circle cx="150" cy="98" r="24" fill="#E8A070"/>
+  <circle cx="142" cy="93" r="4" fill="#222"/>
+  <circle cx="158" cy="93" r="4" fill="#222"/>
+  <path d="M142,108 Q150,114 158,108" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M108,160 Q107,135 150,133 Q193,135 192,160" fill="#8B7FE8"/>
+  <path d="M135,198 Q135,188 150,196 Q165,188 165,198 Q165,210 150,218 Q135,210 135,198Z" fill="#F73E5A"/>
+  <rect x="92" y="224" width="70" height="7" rx="3.5" fill="#eee"/>
+</svg>`,
+
+q1_notif:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#181818')}
+  <path d="M150,82 Q182,82 187,125 L192,178 L108,178 L113,125 Q118,82 150,82Z" fill="#888" stroke="#555" stroke-width="2"/>
+  <circle cx="150" cy="193" r="13" fill="#777"/>
+  <circle cx="190" cy="84" r="16" fill="#F73E5A"/>
+  <text x="190" y="90" text-anchor="middle" font-size="14" fill="white" font-family="sans-serif" font-weight="bold">9</text>
+  <rect x="55" y="52" width="82" height="22" rx="11" fill="#252525" stroke="#333"/>
+  <rect x="58" y="82" width="68" height="22" rx="11" fill="#252525" stroke="#333"/>
+  <rect x="50" y="222" width="92" height="22" rx="11" fill="#252525" stroke="#333"/>
+  <rect x="168" y="218" width="78" height="22" rx="11" fill="#252525" stroke="#333"/>
+</svg>`,
+
+q2_bot:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#0d1a2e')}
+  <rect x="92" y="82" width="116" height="98" rx="20" fill="#1a3a5a" stroke="#2a5a8a" stroke-width="2"/>
+  <rect x="112" y="108" width="30" height="20" rx="10" fill="#00bcd4"/>
+  <rect x="158" y="108" width="30" height="20" rx="10" fill="#00bcd4"/>
+  <circle cx="127" cy="118" r="6" fill="white"/>
+  <circle cx="173" cy="118" r="6" fill="white"/>
+  <rect x="112" y="144" width="76" height="20" rx="6" fill="#0d2a3a"/>
+  <rect x="118" y="148" width="10" height="12" rx="2" fill="#00bcd4"/>
+  <rect x="132" y="148" width="10" height="12" rx="2" fill="#00bcd4"/>
+  <rect x="146" y="148" width="10" height="12" rx="2" fill="#00bcd4"/>
+  <rect x="160" y="148" width="10" height="12" rx="2" fill="#00bcd4"/>
+  <line x1="150" y1="82" x2="150" y2="60" stroke="#2a5a8a" stroke-width="3.5"/>
+  <circle cx="150" cy="55" r="7" fill="#00bcd4"/>
+  <polygon points="150,210 128,242 172,242" fill="none" stroke="#F73E5A" stroke-width="3"/>
+  <text x="150" y="237" text-anchor="middle" font-size="15" fill="#F73E5A" font-weight="bold">!</text>
+</svg>`,
+
+q2_ignore:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1510')}
+  <rect x="58" y="82" width="122" height="62" rx="18" fill="#2a2520"/>
+  <path d="M78,144 L68,165 L102,144Z" fill="#2a2520"/>
+  <circle cx="94" cy="113" r="8" fill="#888"/>
+  <circle cx="119" cy="113" r="8" fill="#888"/>
+  <circle cx="144" cy="113" r="8" fill="#888"/>
+  <rect x="175" y="90" width="62" height="80" rx="30" fill="#E8A070" transform="rotate(12,206,130)"/>
+  <rect x="182" y="74" width="18" height="58" rx="9" fill="#E8A070" transform="rotate(8,191,103)"/>
+  <rect x="202" y="70" width="18" height="58" rx="9" fill="#E8A070" transform="rotate(2,211,99)"/>
+  <rect x="221" y="76" width="16" height="50" rx="8" fill="#E8A070"/>
+  <circle cx="162" cy="222" r="24" fill="#F73E5A" opacity=".15"/>
+  <line x1="150" y1="210" x2="174" y2="234" stroke="#F73E5A" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="174" y1="210" x2="150" y2="234" stroke="#F73E5A" stroke-width="3.5" stroke-linecap="round"/>
+</svg>`,
+
+q2_curious:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="80" y="55" width="140" height="175" rx="20" fill="#141414"/>
+  <circle cx="150" cy="112" r="34" fill="#8B7FE8"/>
+  <circle cx="140" cy="106" r="5.5" fill="#222"/>
+  <circle cx="160" cy="106" r="5.5" fill="#222"/>
+  <path d="M140,122 Q150,130 160,122" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <rect x="103" y="156" width="94" height="9" rx="4.5" fill="#2a2a2a"/>
+  <rect x="103" y="172" width="70" height="7" rx="3.5" fill="#222"/>
+  <circle cx="198" cy="65" r="22" fill="none" stroke="#FFD600" stroke-width="4.5"/>
+  <line x1="213" y1="79" x2="226" y2="93" stroke="#FFD600" stroke-width="4.5" stroke-linecap="round"/>
+</svg>`,
+
+q2_off:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1a1a')}
+  <path d="M150,60 L202,82 L202,148 Q202,190 150,215 Q98,190 98,148 L98,82 Z" fill="#2a2a2a" stroke="#444" stroke-width="2"/>
+  <path d="M150,76 L192,95 L192,150 Q192,182 150,204 Q108,182 108,150 L108,95 Z" fill="#1a1a1a"/>
+  <rect x="131" y="140" width="38" height="30" rx="7" fill="#F73E5A"/>
+  <path d="M138,140 L138,128 Q138,112 150,112 Q162,112 162,128 L162,140" fill="none" stroke="#F73E5A" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="150" cy="155" r="5.5" fill="white"/>
+  <path d="M62,158 L90,158" stroke="#888" stroke-width="3" stroke-dasharray="5,4" stroke-linecap="round"/>
+  <polygon points="93,150 108,158 93,166" fill="#888"/>
+  <line x1="98" y1="150" x2="98" y2="166" stroke="#F73E5A" stroke-width="3.5" stroke-linecap="round"/>
+</svg>`,
+
+q3_friends:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <circle cx="120" cy="112" r="30" fill="#E8A070"/>
+  <circle cx="111" cy="106" r="4.5" fill="#222"/>
+  <circle cx="129" cy="106" r="4.5" fill="#222"/>
+  <path d="M111,122 Q120,129 129,122" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M80,202 Q79,158 120,156 Q142,155 153,165" fill="#8B7FE8"/>
+  <circle cx="182" cy="116" r="28" fill="#5D4037"/>
+  <circle cx="174" cy="110" r="4" fill="#fff" opacity=".85"/>
+  <circle cx="190" cy="110" r="4" fill="#fff" opacity=".85"/>
+  <path d="M174,126 Q182,132 190,126" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M153,202 Q150,160 182,157 Q215,155 220,202" fill="#333"/>
+  <path d="M145,85 Q145,74 158,82 Q171,74 171,85 Q171,96 158,104 Q145,96 145,85Z" fill="white"/>
+</svg>`,
+
+q3_public:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#0d2a1a')}
+  <path d="M80,128 L80,172 L116,172 L152,202 L152,98 L116,128 Z" fill="#4CAF50"/>
+  <rect x="58" y="128" width="24" height="44" rx="7" fill="#388E3C"/>
+  <path d="M160,113 Q178,150 160,187" stroke="#4CAF50" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M172,103 Q196,150 172,197" stroke="#4CAF50" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+  <path d="M184,93 Q215,150 184,207" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round" opacity=".3"/>
+  <circle cx="200" cy="238" r="11" fill="#5D4037"/>
+  <circle cx="222" cy="233" r="11" fill="#E8A070"/>
+  <circle cx="244" cy="238" r="11" fill="#8D6E63"/>
+  <circle cx="56" cy="238" r="11" fill="#8B7FE8"/>
+  <circle cx="78" cy="233" r="11" fill="#5D4037"/>
+  <circle cx="100" cy="238" r="11" fill="#E8A070"/>
+</svg>`,
+
+q3_memory:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1520')}
+  <rect x="62" y="78" width="176" height="145" rx="9" fill="#2a2030"/>
+  <rect x="62" y="78" width="6" height="145" rx="3" fill="#8B7FE8"/>
+  <line x1="150" y1="78" x2="150" y2="223" stroke="#3a3045" stroke-width="1.5"/>
+  <rect x="76" y="98" width="64" height="6" rx="3" fill="#4a3a60"/>
+  <rect x="76" y="112" width="56" height="6" rx="3" fill="#4a3a60"/>
+  <rect x="76" y="126" width="62" height="6" rx="3" fill="#4a3a60"/>
+  <rect x="76" y="140" width="42" height="6" rx="3" fill="#4a3a60"/>
+  <rect x="76" y="154" width="50" height="6" rx="3" fill="#3a2a50"/>
+  <path d="M162,188 L185,138 L208,188Z" fill="none" stroke="#8B7FE8" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M174,188 L194,152 L218,188" fill="none" stroke="#8B7FE8" stroke-width="2" stroke-linejoin="round" opacity=".5"/>
+  <path d="M226,96 L229,107 L240,107 L231,113 L234,124 L226,118 L218,124 L221,113 L212,107 L223,107Z" fill="#FFD600"/>
+</svg>`,
+
+q3_nearby:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="52" y="62" width="196" height="158" rx="18" fill="#141414"/>
+  <rect x="52" y="130" width="196" height="9" fill="#222"/>
+  <rect x="138" y="62" width="9" height="158" fill="#222"/>
+  <path d="M96,120 Q96,94 113,94 Q130,94 130,120 Q130,142 113,158 Q96,142 96,120Z" fill="#F73E5A"/>
+  <circle cx="113" cy="118" r="9" fill="white"/>
+  <path d="M182,93 Q182,72 194,72 Q206,72 206,93 Q206,112 194,124 Q182,112 182,93Z" fill="#FFD600"/>
+  <circle cx="194" cy="91" r="8" fill="#1a1a1a"/>
+  <circle cx="156" cy="175" r="18" fill="#8B7FE8"/>
+  <circle cx="152" cy="170" r="3.5" fill="#222"/>
+  <circle cx="160" cy="170" r="3.5" fill="#222"/>
+  <path d="M152,179 Q156,183 160,179" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`,
+
+q4_locals:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="50" y="155" width="32" height="82" fill="#222"/>
+  <rect x="86" y="128" width="38" height="109" fill="#2a2a2a"/>
+  <rect x="128" y="112" width="44" height="125" fill="#222"/>
+  <rect x="176" y="138" width="32" height="99" fill="#2a2a2a"/>
+  <rect x="212" y="160" width="38" height="77" fill="#222"/>
+  <rect x="94" y="144" width="9" height="9" rx="1.5" fill="#FFD600"/>
+  <rect x="108" y="144" width="9" height="9" rx="1.5" fill="#FFD600" opacity=".5"/>
+  <rect x="136" y="126" width="9" height="9" rx="1.5" fill="#FFD600"/>
+  <rect x="151" y="126" width="9" height="9" rx="1.5" fill="#FFD600" opacity=".7"/>
+  <path d="M136,42 Q136,20 153,20 Q170,20 170,42 Q170,68 153,84 Q136,68 136,42Z" fill="white"/>
+  <circle cx="153" cy="40" r="11" fill="#F73E5A"/>
+  <circle cx="153" cy="40" r="24" fill="none" stroke="white" stroke-width="2.5" opacity=".45"/>
+  <circle cx="153" cy="40" r="38" fill="none" stroke="white" stroke-width="1.5" opacity=".22"/>
+</svg>`,
+
+q4_reviews:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1a1a')}
+  <rect x="62" y="92" width="176" height="112" rx="20" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="78" y="138" font-size="28" fill="#FFD600">★★★★</text>
+  <text x="207" y="138" font-size="28" fill="#333">★</text>
+  <rect x="78" y="150" width="144" height="7" rx="3.5" fill="#2a2a2a"/>
+  <rect x="78" y="163" width="115" height="7" rx="3.5" fill="#2a2a2a"/>
+  <rect x="78" y="176" width="82" height="7" rx="3.5" fill="#2a2a2a"/>
+  <circle cx="232" cy="97" r="24" fill="#F73E5A"/>
+  <path d="M221,97 L228,105 L244,86" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="78" cy="112" r="18" fill="#8B7FE8"/>
+  <circle cx="73" cy="107" r="3.5" fill="#222"/>
+  <circle cx="83" cy="107" r="3.5" fill="#222"/>
+  <path d="M73,116 Q78,121 83,116" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`,
+
+q4_meet:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#8B7FE8')}
+  <circle cx="98" cy="105" r="30" fill="#E8A070"/>
+  <circle cx="89" cy="99" r="5" fill="#222"/>
+  <circle cx="107" cy="99" r="5" fill="#222"/>
+  <path d="M89,115 Q98,122 107,115" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M62,222 Q60,160 98,156 Q120,153 133,164" fill="#F73E5A"/>
+  <circle cx="202" cy="108" r="28" fill="#5D4037"/>
+  <circle cx="194" cy="102" r="4.5" fill="#fff" opacity=".9"/>
+  <circle cx="210" cy="102" r="4.5" fill="#fff" opacity=".9"/>
+  <path d="M194,118 Q202,124 210,118" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M167,222 Q164,164 202,159 Q225,156 240,222" fill="#333"/>
+  <path d="M133,164 L150,178 L167,164" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="150" cy="178" r="9" fill="white"/>
+  <rect x="118" y="55" width="64" height="24" rx="12" fill="rgba(255,255,255,.22)"/>
+  <text x="150" y="71" text-anchor="middle" font-size="11" fill="white" font-family="sans-serif">🎸 music</text>
+</svg>`,
+
+q4_maps:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a2030')}
+  <rect x="98" y="58" width="104" height="174" rx="20" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+  <rect x="109" y="71" width="82" height="132" rx="10" fill="#1e3a2a"/>
+  <line x1="109" y1="108" x2="191" y2="108" stroke="#2a5a3a" stroke-width="1"/>
+  <line x1="109" y1="140" x2="191" y2="140" stroke="#2a5a3a" stroke-width="1"/>
+  <line x1="138" y1="71" x2="138" y2="203" stroke="#2a5a3a" stroke-width="1"/>
+  <line x1="164" y1="71" x2="164" y2="203" stroke="#2a5a3a" stroke-width="1"/>
+  <circle cx="146" cy="140" r="9" fill="#2196F3"/>
+  <circle cx="146" cy="140" r="16" fill="#2196F3" opacity=".2"/>
+  <path d="M146,140 L146,108 L164,108 L164,88" stroke="#2196F3" stroke-width="2.5" fill="none" stroke-dasharray="4,3"/>
+  <circle cx="164" cy="83" r="9" fill="#F73E5A"/>
+  <circle cx="150" cy="240" r="18" fill="#555"/>
+  <ellipse cx="150" cy="243" rx="7" ry="9" fill="#333"/>
+</svg>`,
+
+q5_aigen:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1020')}
+  <rect x="52" y="82" width="88" height="118" rx="16" fill="#1e1e2a"/>
+  <rect x="61" y="92" width="70" height="60" rx="9" fill="#2a3a5a"/>
+  <path d="M61,144 L84,118 L97,134 L118,112 L131,144Z" fill="#3a5a3a"/>
+  <circle cx="95" cy="104" r="11" fill="#FFD600"/>
+  <rect x="61" y="160" width="42" height="11" rx="5.5" fill="#4CAF50" opacity=".7"/>
+  <text x="82" y="170" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="bold">REAL</text>
+  <rect x="160" y="82" width="88" height="118" rx="16" fill="#2a1a2a"/>
+  <rect x="169" y="92" width="70" height="60" rx="9" fill="#3a2a4a"/>
+  <circle cx="204" cy="118" r="24" fill="#8B7FE8" opacity=".65"/>
+  <rect x="192" y="112" width="9" height="7" rx="3.5" fill="#00BCD4"/>
+  <rect x="207" y="112" width="14" height="7" rx="3.5" fill="#FF5722"/>
+  <path d="M191,128 Q204,136 217,126" stroke="#FFD600" stroke-width="2.5" fill="none"/>
+  <circle cx="220" cy="104" r="6" fill="#F73E5A"/>
+  <rect x="169" y="160" width="42" height="11" rx="5.5" fill="#F73E5A" opacity=".7"/>
+  <text x="190" y="170" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="bold">AI?</text>
+  <text x="150" y="155" text-anchor="middle" font-size="22" fill="#888">?</text>
+</svg>`,
+
+q5_ads:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1010')}
+  <circle cx="150" cy="132" r="64" fill="#2a1a1a" stroke="#3a2020" stroke-width="2"/>
+  <circle cx="127" cy="120" r="20" fill="#F73E5A"/>
+  <text x="127" y="128" text-anchor="middle" font-size="20" fill="white" font-family="sans-serif" font-weight="bold">$</text>
+  <circle cx="173" cy="120" r="20" fill="#F73E5A"/>
+  <text x="173" y="128" text-anchor="middle" font-size="20" fill="white" font-family="sans-serif" font-weight="bold">$</text>
+  <path d="M117,152 Q150,174 183,152 Q175,178 150,180 Q125,178 117,152Z" fill="#F73E5A"/>
+  <path d="M100,167 Q58,188 48,224" stroke="#F73E5A" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>
+  <path d="M200,167 Q242,188 252,224" stroke="#F73E5A" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>
+  <path d="M150,194 L150,244" stroke="#F73E5A" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>
+</svg>`,
+
+q5_miss:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="88" y="52" width="124" height="200" rx="22" fill="#141414" stroke="#222" stroke-width="2"/>
+  <rect x="99" y="65" width="102" height="165" rx="14" fill="#0d0d0d"/>
+  <rect x="99" y="65" width="102" height="48" rx="8" fill="#2a1a1a"/>
+  <text x="150" y="94" text-anchor="middle" font-size="11" fill="#F73E5A" font-family="sans-serif" font-weight="bold">SPONSORED</text>
+  <rect x="99" y="116" width="102" height="48" rx="0" fill="#2a1a1a"/>
+  <text x="150" y="145" text-anchor="middle" font-size="11" fill="#F73E5A" font-family="sans-serif" font-weight="bold">SPONSORED</text>
+  <rect x="99" y="167" width="102" height="48" rx="0" fill="#1a2a1a" opacity=".85"/>
+  <circle cx="114" cy="179" r="9" fill="#8B7FE8"/>
+  <rect x="128" y="175" width="62" height="6" rx="3" fill="#3a5a3a"/>
+  <rect x="128" y="185" width="46" height="6" rx="3" fill="#2a4a2a"/>
+  <rect x="99" y="218" width="102" height="12" rx="0" fill="#111"/>
+  <text x="150" y="228" text-anchor="middle" font-size="9" fill="#444" font-family="sans-serif">3 posts from friends hidden</text>
+</svg>`,
+
+q5_casino:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1010')}
+  <rect x="78" y="78" width="144" height="132" rx="16" fill="#2a1515" stroke="#3a2020" stroke-width="2"/>
+  <rect x="92" y="98" width="38" height="58" rx="9" fill="#111"/>
+  <rect x="131" y="98" width="38" height="58" rx="9" fill="#111"/>
+  <rect x="170" y="98" width="38" height="58" rx="9" fill="#111"/>
+  <text x="111" y="133" text-anchor="middle" font-size="24">🎯</text>
+  <text x="150" y="133" text-anchor="middle" font-size="24">🎰</text>
+  <text x="189" y="133" text-anchor="middle" font-size="24">💔</text>
+  <line x1="222" y1="98" x2="246" y2="130" stroke="#888" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="248" cy="134" r="11" fill="#F73E5A"/>
+  <circle cx="98" cy="226" r="9" fill="#FFD600"/>
+  <circle cx="118" cy="234" r="8" fill="#FFD600" opacity=".7"/>
+  <circle cx="138" cy="224" r="10" fill="#FFD600" opacity=".5"/>
+  <circle cx="212" cy="222" r="24" fill="none" stroke="#555" stroke-width="3.5"/>
+  <line x1="212" y1="222" x2="212" y2="206" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+  <line x1="212" y1="222" x2="226" y2="228" stroke="#F73E5A" stroke-width="3" stroke-linecap="round"/>
+</svg>`,
+
+q6_delete:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="103" y="58" width="94" height="158" rx="20" fill="#141414" stroke="#222" stroke-width="2"/>
+  <rect x="114" y="72" width="72" height="122" rx="12" fill="#0d0d0d"/>
+  <rect x="122" y="82" width="20" height="20" rx="6" fill="#8B7FE8"/>
+  <rect x="148" y="82" width="20" height="20" rx="6" fill="#2196F3"/>
+  <rect x="122" y="107" width="20" height="20" rx="6" fill="#4CAF50"/>
+  <rect x="148" y="107" width="20" height="20" rx="6" fill="#FF9800"/>
+  <circle cx="150" cy="152" r="38" fill="#F73E5A" opacity=".92"/>
+  <line x1="134" y1="136" x2="166" y2="168" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="166" y1="136" x2="134" y2="168" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <rect x="126" y="232" width="48" height="34" rx="5" fill="#333"/>
+  <rect x="120" y="226" width="60" height="9" rx="4.5" fill="#444"/>
+  <line x1="138" y1="230" x2="138" y2="264" stroke="#555" stroke-width="2"/>
+  <line x1="150" y1="230" x2="150" y2="264" stroke="#555" stroke-width="2"/>
+  <line x1="162" y1="230" x2="162" y2="264" stroke="#555" stroke-width="2"/>
+</svg>`,
+
+q6_uneasy:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1a1a')}
+  <circle cx="150" cy="118" r="46" fill="#E8A070"/>
+  <circle cx="135" cy="110" r="6.5" fill="#222"/>
+  <circle cx="165" cy="110" r="6.5" fill="#222"/>
+  <path d="M132,135 Q139,130 146,135 Q153,139 160,135 Q167,130 166,135" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M186,92 Q192,83 198,92 Q198,102 186,102 Q180,102 186,92Z" fill="#4FC3F7"/>
+  <ellipse cx="150" cy="57" rx="37" ry="19" fill="#2a2a2a"/>
+  <ellipse cx="126" cy="64" rx="22" ry="15" fill="#2a2a2a"/>
+  <ellipse cx="174" cy="64" rx="22" ry="15" fill="#2a2a2a"/>
+  <text x="150" y="68" text-anchor="middle" font-size="18">😰</text>
+  <path d="M98,170 Q98,148 150,164 Q202,148 202,170" fill="#8B7FE8"/>
+  <path d="M80,162 Q88,151 98,158" stroke="#8B7FE8" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M220,162 Q212,151 202,158" stroke="#8B7FE8" stroke-width="9" stroke-linecap="round" fill="none"/>
+</svg>`,
+
+q6_eu:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#003399')}
+  <circle cx="150" cy="130" r="72" fill="#003399" stroke="#FFD600" stroke-width="3.5"/>
+  ${Array.from({length:12},(_,i)=>{const a=(i*30-90)*Math.PI/180;const x=150+54*Math.cos(a);const y=130+54*Math.sin(a);return `<text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" fill="#FFD600">★</text>`;}).join('')}
+  <path d="M150,100 L170,112 L170,140 Q170,162 150,172 Q130,162 130,140 L130,112 Z" fill="#FFD600"/>
+  <path d="M150,112 L165,121 L165,141 Q165,156 150,164 Q135,156 135,141 L135,121 Z" fill="#003399"/>
+  <path d="M141,140 L148,148 L162,130" stroke="#FFD600" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="92" y="222" width="116" height="30" rx="15" fill="rgba(255,215,0,.14)"/>
+  <text x="150" y="241" text-anchor="middle" font-size="12" fill="#FFD600" font-family="sans-serif" font-weight="bold">Made in Europe</text>
+</svg>`,
+
+q6_unaware:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1a1a')}
+  <circle cx="150" cy="152" r="42" fill="#8D6E63"/>
+  <circle cx="140" cy="146" r="5.5" fill="#222"/>
+  <circle cx="160" cy="146" r="5.5" fill="#222"/>
+  <path d="M140,163 Q150,170 160,163" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <rect x="205" y="76" width="38" height="24" rx="7" fill="#F73E5A" opacity=".85"/>
+  <text x="224" y="93" text-anchor="middle" font-size="10" fill="white" font-family="sans-serif" font-weight="bold">DATA</text>
+  <rect x="216" y="112" width="38" height="24" rx="7" fill="#F73E5A" opacity=".62"/>
+  <text x="235" y="129" text-anchor="middle" font-size="10" fill="white" font-family="sans-serif" font-weight="bold">DATA</text>
+  <rect x="56" y="86" width="38" height="24" rx="7" fill="#F73E5A" opacity=".72"/>
+  <text x="75" y="103" text-anchor="middle" font-size="10" fill="white" font-family="sans-serif" font-weight="bold">DATA</text>
+  <path d="M194,112 L206,84" stroke="#F73E5A" stroke-width="2" fill="none" stroke-dasharray="4,3" opacity=".5"/>
+  <path d="M197,132 L214,126" stroke="#F73E5A" stroke-width="2" fill="none" stroke-dasharray="4,3" opacity=".5"/>
+  <path d="M106,112 L92,96" stroke="#F73E5A" stroke-width="2" fill="none" stroke-dasharray="4,3" opacity=".5"/>
+  <text x="150" y="104" text-anchor="middle" font-size="18" fill="#555" font-weight="bold">z z z</text>
+</svg>`,
+
+q7_one:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#F73E5A')}
+  <rect x="84" y="48" width="132" height="214" rx="26" fill="#141414" stroke="#222" stroke-width="2.5"/>
+  <rect x="97" y="63" width="106" height="178" rx="16" fill="#0d0d0d"/>
+  <rect x="112" y="76" width="76" height="76" rx="22" fill="#F73E5A"/>
+  <path d="M125,140 L125,100 L150,124 L175,100 L175,140" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="104" y="165" width="24" height="24" rx="8" fill="#1a2a3a"/>
+  <rect x="132" y="165" width="24" height="24" rx="8" fill="#1a2a1a"/>
+  <rect x="160" y="165" width="24" height="24" rx="8" fill="#2a1a2a"/>
+  <line x1="109" y1="170" x2="122" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+  <line x1="122" y1="170" x2="109" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+  <line x1="137" y1="170" x2="150" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+  <line x1="150" y1="170" x2="137" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+  <line x1="165" y1="170" x2="178" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+  <line x1="178" y1="170" x2="165" y2="183" stroke="#F73E5A" stroke-width="1.8"/>
+</svg>`,
+
+q7_quiet:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#0d1a2a')}
+  <rect x="68" y="62" width="164" height="132" rx="18" fill="#0a1520" stroke="#1a2a3a" stroke-width="2"/>
+  <circle cx="98" cy="95" r="2.5" fill="white" opacity=".8"/>
+  <circle cx="130" cy="79" r="2" fill="white" opacity=".6"/>
+  <circle cx="168" cy="90" r="2.5" fill="white" opacity=".7"/>
+  <circle cx="198" cy="77" r="2" fill="white"/>
+  <circle cx="212" cy="102" r="2.5" fill="white" opacity=".5"/>
+  <circle cx="83" cy="118" r="2" fill="white" opacity=".4"/>
+  <circle cx="188" cy="112" r="20" fill="#FFD600" opacity=".8"/>
+  <circle cx="196" cy="105" r="14" fill="#0a1520"/>
+  <circle cx="150" cy="155" r="22" fill="#2a3a4a"/>
+  <path d="M116,204 Q113,172 150,170 Q187,172 184,204" fill="#1a2a3a"/>
+  <circle cx="150" cy="244" r="18" fill="none" stroke="#4FC3F7" stroke-width="2.5" opacity=".4"/>
+  <circle cx="150" cy="244" r="30" fill="none" stroke="#4FC3F7" stroke-width="1.5" opacity=".22"/>
+  <text x="150" y="249" text-anchor="middle" font-size="16" fill="#4FC3F7">~</text>
+</svg>`,
+
+q7_old:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1520')}
+  <rect x="62" y="72" width="176" height="132" rx="14" fill="#2a2535" stroke="#3a3045" stroke-width="2"/>
+  <rect x="74" y="84" width="152" height="102" rx="7" fill="#0d1520"/>
+  <rect x="80" y="90" width="140" height="15" rx="7.5" fill="#1a2530"/>
+  <text x="150" y="102" text-anchor="middle" font-size="9" fill="#4FC3F7" font-family="monospace">http://monnett.com</text>
+  <rect x="82" y="113" width="32" height="32" rx="5" fill="#2a3a4a"/>
+  <rect x="119" y="113" width="100" height="8" rx="4" fill="#2a3a4a"/>
+  <rect x="119" y="125" width="82" height="8" rx="4" fill="#1f2f3f"/>
+  <rect x="119" y="137" width="62" height="8" rx="4" fill="#1f2f3f"/>
+  <circle cx="98" cy="129" r="11" fill="#8B7FE8"/>
+  <text x="80" y="178" font-size="16" fill="#FFD600" opacity=".8">✦</text>
+  <text x="222" y="172" font-size="12" fill="#FFD600" opacity=".6">✦</text>
+  <rect x="98" y="218" width="104" height="42" rx="9" fill="#2a2535" stroke="#3a3045" stroke-width="1.5"/>
+  <rect x="107" y="226" width="13" height="11" rx="2.5" fill="#1a1525"/>
+  <rect x="124" y="226" width="13" height="11" rx="2.5" fill="#1a1525"/>
+  <rect x="141" y="226" width="13" height="11" rx="2.5" fill="#1a1525"/>
+  <rect x="158" y="226" width="13" height="11" rx="2.5" fill="#1a1525"/>
+  <rect x="175" y="226" width="13" height="11" rx="2.5" fill="#1a1525"/>
+  <rect x="112" y="242" width="78" height="11" rx="2.5" fill="#1a1525"/>
+</svg>`,
+
+q7_time:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1a1010')}
+  <path d="M102,68 L198,68 L156,148 L198,228 L102,228 L144,148 Z" fill="#1e1e1e" stroke="#333" stroke-width="2.5"/>
+  <path d="M113,74 L187,74 L150,142Z" fill="#F73E5A" opacity=".62"/>
+  <line x1="150" y1="142" x2="150" y2="162" stroke="#F73E5A" stroke-width="2.5" opacity=".5"/>
+  <path d="M126,222 Q150,206 174,222" fill="#F73E5A" opacity=".38"/>
+  <rect x="52" y="135" width="54" height="22" rx="11" fill="#E8A070"/>
+  <rect x="52" y="120" width="16" height="30" rx="8" fill="#E8A070"/>
+  <rect x="72" y="116" width="16" height="30" rx="8" fill="#E8A070"/>
+  <rect x="194" y="135" width="54" height="22" rx="11" fill="#E8A070"/>
+  <rect x="232" y="120" width="16" height="30" rx="8" fill="#E8A070"/>
+  <rect x="212" y="116" width="16" height="30" rx="8" fill="#E8A070"/>
+  <rect x="108" y="250" width="84" height="24" rx="12" fill="#2a1a1a"/>
+  <text x="150" y="266" text-anchor="middle" font-size="11" fill="#F73E5A" font-family="sans-serif" font-weight="bold">MY TIME</text>
+</svg>`
 };
 
-// ── STATE ─────────────────────────────────────────────────
-let currentQ = 0;
-let selected = null;
-let scores = { noise: 0, connection: 0, memory: 0, explorer: 0, trust: 0 };
+// DATA
+const questions=[
+  {text:"You open your favourite social app. What greets you first?",options:[
+    {svg:'q1_ad',    label:"An ad for something you mentioned in a private conversation",scores:{noise:2}},
+    {svg:'q1_algo',  label:"A viral video from someone you've never heard of",scores:{noise:2}},
+    {svg:'q1_friend',label:"A post from a friend you actually know",scores:{connection:2}},
+    {svg:'q1_notif', label:"A notification that means absolutely nothing to you",scores:{noise:1,trust:-1}}
+  ]},
+  {text:"A DM arrives from someone you don't know. Your gut says…",options:[
+    {svg:'q2_bot',    label:"Probably a bot or scam. I don't even open it.",scores:{trust:2}},
+    {svg:'q2_ignore', label:"Could be real, but I'll ignore it just in case.",scores:{trust:1}},
+    {svg:'q2_curious',label:"I check their profile first — could be interesting.",scores:{connection:1,explorer:1}},
+    {svg:'q2_off',    label:"I've turned off DMs from strangers entirely.",scores:{noise:1,trust:1}}
+  ]},
+  {text:"Something beautiful happens. You want to share it. Who do you picture seeing it?",options:[
+    {svg:'q3_friends',label:"Close friends — the people who actually know me.",scores:{connection:2}},
+    {svg:'q3_public', label:"Everyone following me — more reactions the better.",scores:{noise:-1}},
+    {svg:'q3_memory', label:"No one. I just want to preserve the memory.",scores:{memory:2}},
+    {svg:'q3_nearby', label:"Real people nearby who might relate to this moment.",scores:{explorer:2}}
+  ]},
+  {text:"You arrive in a new city. What do you wish your phone could actually do?",options:[
+    {svg:'q4_locals', label:"Show what real locals — not influencers — are doing nearby.",scores:{explorer:2,trust:1}},
+    {svg:'q4_reviews',label:"Honest reviews from real humans, not SEO-farmed content.",scores:{trust:2}},
+    {svg:'q4_meet',   label:"Help me meet someone with similar interests nearby.",scores:{connection:2}},
+    {svg:'q4_maps',   label:"Honestly? I just use Google Maps and keep to myself.",scores:{noise:1}}
+  ]},
+  {text:"What bothers you MOST about social media in 2025?",options:[
+    {svg:'q5_aigen',  label:"I can't tell what's AI-generated and what's real anymore.",scores:{trust:3}},
+    {svg:'q5_ads',    label:"Every app is secretly selling my attention to advertisers.",scores:{noise:2,trust:1}},
+    {svg:'q5_miss',   label:"I keep missing posts from people I actually care about.",scores:{connection:2}},
+    {svg:'q5_casino', label:"It's designed like a casino — to keep me scrolling, not connecting.",scores:{noise:2,memory:1}}
+  ]},
+  {text:"You discover an app stores your messages on servers with zero privacy laws. You…",options:[
+    {svg:'q6_delete', label:"Delete it immediately. I don't negotiate with my privacy.",scores:{trust:3}},
+    {svg:'q6_uneasy', label:"Feel uneasy — but probably won't do anything about it.",scores:{trust:1}},
+    {svg:'q6_eu',     label:"Start looking for a European alternative that respects me.",scores:{trust:2,connection:1}},
+    {svg:'q6_unaware',label:"Honestly, I'd never really thought about where my data lives.",scores:{explorer:1}}
+  ]},
+  {text:"Be honest — what would make you actually love an app?",options:[
+    {svg:'q7_one',  label:"One clean space for chat, people, and discovery. No chaos.",scores:{explorer:2,noise:1}},
+    {svg:'q7_quiet',label:"A quiet corner of the internet where only real humans exist.",scores:{trust:2,connection:1}},
+    {svg:'q7_old',  label:"Something that feels like the early internet — curious and real.",scores:{memory:2,trust:1}},
+    {svg:'q7_time', label:"An app that respects my time and doesn't try to addict me.",scores:{noise:2,connection:1}}
+  ]}
+];
 
-// ── HELPERS ───────────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const el = document.getElementById(id);
-  el.style.display = 'flex';
-  requestAnimationFrame(() => {
-    el.style.animation = 'none';
-    requestAnimationFrame(() => {
-      el.style.animation = '';
-      el.classList.add('active');
-    });
+const badges={
+  noise:{icon:"🧭",name:"The Signal Seeker",desc:"You've been burned by noise for too long. You know the difference between content made to manipulate you and a moment genuinely worth your time. You don't need an algorithm deciding what matters — you already know.",card:"<strong>Monnett was built for you.</strong> No recommendations unless you ask. No ads. No AI slop. Just the people you chose to follow, and what they actually chose to share. Open the app, catch up, close it. That's it.",pillars:["No ads ever","No algorithm","Friends-only feed","You control the signal"]},
+  connection:{icon:"🤝",name:"The Real One",desc:"You show up authentically and expect the same back. You're not performing for an audience — you're sharing with people who matter. The reply from a friend always meant more than a thousand likes from strangers.",card:"<strong>On Monnett, your friends are the feed.</strong> You open the app when you're curious what they're up to, or when something happens you want to share. Social media that works like real friendship — end-to-end encrypted, no noise.",pillars:["Friends-first feed","E2E encrypted chat","Real human connections","Share with people who care"]},
+  memory:{icon:"🏡",name:"The Memory Keeper",desc:"You post to preserve, not to perform. Every shared moment is a small entry in the story of your life. You hate how platforms let everything vanish — or bury it under algorithmic chaos.",card:"<strong>On Monnett, content accumulates.</strong> Your profile is a month-by-month diary of your lived experience. Posts don't disappear. Over time, Monnett becomes the shared record of a life well lived — together.",pillars:["Monthly diary layout","Posts that stay","Your social memory","Shared moments, preserved"]},
+  explorer:{icon:"🗺️",name:"The Local Explorer",desc:"You want to discover real things — real people nearby, real places, real events in your world. Not curated hotspots or influencer tours. What actual humans around you are experiencing, right now.",card:"<strong>Monnett's Discover is GPS-anchored.</strong> Every public post is tagged to a verified real location. No bots, no fake places. Real people, local to global — your choice, when you want it. Just €4/year to post publicly.",pillars:["GPS-verified content","Local → global discovery","Real people nearby","€4/yr proof of human"]},
+  trust:{icon:"🛡️",name:"The Conscious One",desc:"You've started questioning everything online — and rightly so. Who's real? Where's your data? Who profits from your attention? You're not paranoid, you're awake. You've been waiting for something built with this in mind.",card:"<strong>Monnett is made and hosted in Europe.</strong> Public posts require GPS + a symbolic €4/year — enough to confirm a real human, not a bot farm. E2E encrypted chat. Zero tracking. Zero ad targeting. A network you can actually trust.",pillars:["Made & hosted in Europe 🇪🇺","Proof of human (€4/yr)","E2E encrypted chat","Zero tracking"]}
+};
+
+let qIndex=0, selected=null, scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const el=document.getElementById(id);
+  el.style.display='flex';
+  el.style.animation='none';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.animation='';el.classList.add('active');}));
+}
+
+function startGame(){
+  qIndex=0; selected=null;
+  scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
+  renderQ(); showScreen('screen-question');
+}
+
+function renderQ(){
+  selected=null;
+  const q=questions[qIndex];
+  const pct=Math.round(qIndex/questions.length*100);
+  document.getElementById('q-label').textContent=String(qIndex+1).padStart(2,'0')+' of '+String(questions.length).padStart(2,'0');
+  document.getElementById('q-pct').textContent=pct+'%';
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('q-text').textContent=q.text;
+  const grid=document.getElementById('options-grid');
+  grid.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const card=document.createElement('div'); card.className='opt-card';
+    card.style.animationDelay=(i*0.07)+'s';
+    const illus=document.createElement('div'); illus.className='opt-illus';
+    illus.innerHTML=SVG[opt.svg]||'<svg viewBox="0 0 300 300"><rect width="300" height="300" fill="#222"/></svg>';
+    const label=document.createElement('div'); label.className='opt-label'; label.textContent=opt.label;
+    card.appendChild(illus); card.appendChild(label);
+    card.addEventListener('click',()=>pick(card,i));
+    grid.appendChild(card);
   });
 }
 
-// ── GAME FLOW ─────────────────────────────────────────────
-function startGame() {
-  currentQ = 0;
-  scores = { noise: 0, connection: 0, memory: 0, explorer: 0, trust: 0 };
-  renderQuestion();
-  showScreen('screen-question');
-}
-
-function renderQuestion() {
-  selected = null;
-  const q = questions[currentQ];
-  const pct = Math.round((currentQ / questions.length) * 100);
-
-  document.getElementById('q-label').textContent = `Question ${currentQ + 1} of ${questions.length}`;
-  document.getElementById('q-pct').textContent = `${pct}%`;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('q-number').textContent = String(currentQ + 1).padStart(2, '0') + ' —';
-  document.getElementById('q-text').textContent = q.text;
-
-  const wrap = document.getElementById('options-wrap');
-  wrap.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    div.innerHTML = `<span class="option-emoji">${opt.emoji}</span><span class="option-text">${opt.text}</span>`;
-    div.style.animationDelay = (i * 0.07) + 's';
-    div.style.animation = 'fadeSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) both';
-    div.onclick = () => selectOption(div, i);
-    wrap.appendChild(div);
-  });
-}
-
-function selectOption(el, idx) {
-  if (selected !== null) return;
-  selected = idx;
-
-  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+function pick(el,idx){
+  if(selected!==null)return;
+  selected=idx;
+  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-
-  // Apply scores
-  const optScores = questions[currentQ].options[idx].scores;
-  Object.entries(optScores).forEach(([key, val]) => {
-    scores[key] = (scores[key] || 0) + val;
-  });
-
-  setTimeout(() => {
-    currentQ++;
-    if (currentQ < questions.length) {
-      renderQuestion();
-    } else {
-      showSorting();
-    }
-  }, 420);
+  const s=questions[qIndex].options[idx].scores;
+  Object.entries(s).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
+  setTimeout(()=>{
+    qIndex++;
+    if(qIndex<questions.length){renderQ();}
+    else{showScreen('screen-sorting');setTimeout(showResult,2600);}
+  },380);
 }
 
-function showSorting() {
-  showScreen('screen-sorting');
-  setTimeout(showResult, 2800);
-}
-
-function showResult() {
-  // Find winner
-  const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
-  const badge = badges[winner];
-
-  document.getElementById('result-icon').textContent = badge.icon;
-  document.getElementById('result-name').textContent = badge.name;
-  document.getElementById('result-desc').textContent = badge.desc;
-  document.getElementById('result-highlight').innerHTML = badge.highlight;
-
-  const pillarsWrap = document.getElementById('result-pillars');
-  pillarsWrap.innerHTML = badge.pillars.map(p => `<div class="pillar">${p}</div>`).join('');
-
+function showResult(){
+  const winner=Object.entries(scores).reduce((a,b)=>b[1]>a[1]?b:a)[0];
+  const b=badges[winner];
+  document.getElementById('result-icon').textContent=b.icon;
+  document.getElementById('result-name').textContent=b.name;
+  document.getElementById('result-desc').textContent=b.desc;
+  document.getElementById('result-card').innerHTML=b.card;
+  document.getElementById('result-pillars').innerHTML=b.pillars.map(p=>`<div class="pill">${p}</div>`).join('');
   showScreen('screen-result');
 }
 </script>
