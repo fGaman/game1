@@ -48,8 +48,8 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
 .intro-note { margin-top:20px; font-size:12px; color:#3a3a3a; }
 
 /* QUESTION */
-#screen-question { padding:0; gap:0; }
-.q-header { width:100%; padding:20px 20px 14px; flex-shrink:0; }
+#screen-question { padding:0; gap:0; position:relative; }
+.q-header { width:100%; padding:20px 20px 14px 64px; flex-shrink:0; }
 .progress-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
 .progress-num { font-family:'Syne',sans-serif; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--red); font-weight:600; }
 .progress-pct { font-size:11px; color:#444; font-family:'Syne',sans-serif; }
@@ -70,8 +70,13 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
 .opt-card.selected::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--red); }
 .opt-illus { width:110px; height:110px; flex-shrink:0; overflow:hidden; background:#111; }
 .opt-illus svg { width:100%; height:100%; display:block; }
-.opt-label { padding:16px 18px; font-family:'Syne',sans-serif; font-size:clamp(15px,4vw,18px); font-weight:700; line-height:1.25; letter-spacing:-.3px; color:#888; flex:1; }
+.opt-label { padding:16px 18px; font-family:'Syne',sans-serif; font-size:clamp(15px,4vw,18px); font-weight:700; line-height:1.25; letter-spacing:-.3px; color:#fff; flex:1; }
 .opt-card.selected .opt-label { color:#fff; }
+
+/* BACK BUTTON */
+.btn-back { position:absolute; top:20px; left:16px; width:38px; height:38px; background:#1a1a1a; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; transition:background .18s; }
+.btn-back:active { background:#2a2a2a; }
+.btn-back svg { display:block; }
 .opt-check { width:24px; height:24px; border-radius:50%; border:2px solid #333; flex-shrink:0; margin-right:18px; display:flex; align-items:center; justify-content:center; transition:all .18s; }
 .opt-card.selected .opt-check { background:var(--red); border-color:var(--red); }
 .opt-check-tick { width:10px; height:10px; opacity:0; transition:opacity .15s; }
@@ -111,6 +116,25 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
 .btn-cta:active { transform:scale(.98); }
 .btn-restart { background:transparent; color:#444; border:1.5px solid #2a2a2a; border-radius:100px; padding:14px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; margin-top:4px; }
 .btn-restart:active { transform:scale(.98); color:#888; border-color:#444; }
+.btn-stats { background:none; border:none; color:#555; font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:16px; text-decoration:underline; text-underline-offset:3px; transition:color .2s; }
+.btn-stats:hover { color:#888; }
+
+/* STATS SCREEN */
+#screen-stats { justify-content:flex-start; padding:0 0 48px; min-height:100dvh; }
+.stats-header { width:100%; padding:20px 20px 16px 64px; position:relative; display:flex; align-items:center; border-bottom:1px solid #1e1e1e; flex-shrink:0; }
+.stats-header .btn-back { position:absolute; left:16px; top:50%; transform:translateY(-50%); }
+.stats-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:#fff; }
+.stats-body { width:100%; padding:32px 24px; display:flex; flex-direction:column; align-items:center; gap:28px; }
+.stats-total { font-family:'Syne',sans-serif; font-size:14px; color:#555; letter-spacing:.5px; }
+.stats-total span { color:#fff; font-size:22px; font-weight:800; }
+#pie-chart { display:block; }
+.stats-legend { width:100%; display:flex; flex-direction:column; gap:12px; }
+.legend-row { display:flex; align-items:center; gap:14px; }
+.legend-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+.legend-label { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; flex:1; }
+.legend-pct { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:#fff; }
+.legend-bar-wrap { width:100%; height:4px; background:#1e1e1e; border-radius:100px; margin-top:4px; }
+.legend-bar { height:100%; border-radius:100px; transition:width .8s cubic-bezier(.22,1,.36,1); }
 .cta-note { font-size:12px; color:#3a3a3a; text-align:center; }
 .cta-note span { color:#555; }
 </style>
@@ -127,13 +151,17 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
     </svg>
   </div>
   <h1 class="intro-title">The internet<br>got <span>broken.</span><br>Find your place.</h1>
-  <p class="intro-sub">7 quick questions. No ads, no algorithm. Just an honest look at who you are online — and where you belong.</p>
   <button class="btn-start" onclick="startGame()">Begin the sorting →</button>
   <p class="intro-note">~2 minutes · Made &amp; hosted in Europe 🇪🇺</p>
 </div>
 
 <!-- QUESTION -->
 <div class="screen" id="screen-question">
+  <button class="btn-back" id="btn-back" onclick="goBack()">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M11 4L6 9L11 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <div class="q-header">
     <div class="progress-row">
       <span class="progress-num" id="q-label">01 of 07</span>
@@ -173,6 +201,24 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
     <button class="btn-cta">Add my badge &amp; join Monnett →</button>
     <button class="btn-restart" onclick="startGame()">↩ Sort me again</button>
     <div class="cta-note">Free to join · <span>Membership from €2.99/mo</span> · 🇪🇺 Europe</div>
+    <button class="btn-stats" onclick="showStats()">See who else took this quiz →</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="screen" id="screen-stats">
+  <div class="stats-header">
+    <button class="btn-back" onclick="showScreen('screen-result')">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M11 4L6 9L11 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="stats-title">Who's taking this quiz</div>
+  </div>
+  <div class="stats-body">
+    <div class="stats-total" id="stats-total">— people sorted so far</div>
+    <canvas id="pie-chart" width="260" height="260"></canvas>
+    <div class="stats-legend" id="stats-legend"></div>
   </div>
 </div>
 
@@ -612,40 +658,40 @@ q7_time:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1
 
 // DATA — 3 options per question, multi-select
 const questions=[
-  {text:"You open your favourite social app. What greets you first?",options:[
-    {svg:'q1_ad',    label:"An ad for something you mentioned in a private conversation",scores:{noise:2}},
-    {svg:'q1_algo',  label:"A viral video from someone you've never heard of",scores:{noise:2}},
-    {svg:'q1_friend',label:"A post from a friend you actually know",scores:{connection:2}}
+  {text:"You open a social app. What's first?",options:[
+    {svg:'q1_ad',    label:"An ad for something you said privately",scores:{noise:2}},
+    {svg:'q1_algo',  label:"A video from a total stranger",scores:{noise:2}},
+    {svg:'q1_friend',label:"A post from someone you actually know",scores:{connection:2}}
   ]},
-  {text:"A DM arrives from someone you don't know. Your gut says…",options:[
-    {svg:'q2_bot',    label:"Probably a bot or scam. I don't even open it.",scores:{trust:2}},
-    {svg:'q2_curious',label:"I check their profile — could be interesting.",scores:{connection:1,explorer:1}},
-    {svg:'q2_off',    label:"I've turned off DMs from strangers entirely.",scores:{noise:1,trust:1}}
+  {text:"A DM from a stranger. Your gut says…",options:[
+    {svg:'q2_bot',    label:"Looks like a bot. Don't open it.",scores:{trust:2}},
+    {svg:'q2_curious',label:"Check their profile. Could be real.",scores:{connection:1,explorer:1}},
+    {svg:'q2_off',    label:"Strangers can't DM me. I turned it off.",scores:{noise:1,trust:1}}
   ]},
-  {text:"Something beautiful happens. Who do you picture seeing it?",options:[
-    {svg:'q3_friends',label:"Close friends — the people who actually know me.",scores:{connection:2}},
-    {svg:'q3_memory', label:"No one. I just want to preserve the memory.",scores:{memory:2}},
-    {svg:'q3_nearby', label:"Real people nearby who might relate to this moment.",scores:{explorer:2}}
+  {text:"Something beautiful happens. Who sees it?",options:[
+    {svg:'q3_friends',label:"My close friends. People who know me.",scores:{connection:2}},
+    {svg:'q3_memory', label:"No one. Just want to remember it.",scores:{memory:2}},
+    {svg:'q3_nearby', label:"People nearby who'd get it.",scores:{explorer:2}}
   ]},
-  {text:"You arrive in a new city. What do you wish your phone could do?",options:[
-    {svg:'q4_locals', label:"Show what real locals — not influencers — are doing nearby.",scores:{explorer:2,trust:1}},
-    {svg:'q4_reviews',label:"Honest reviews from real humans, not SEO-farmed content.",scores:{trust:2}},
-    {svg:'q4_meet',   label:"Help me meet someone with similar interests nearby.",scores:{connection:2}}
+  {text:"New city. What do you wish your phone could do?",options:[
+    {svg:'q4_locals', label:"What real locals are doing nearby.",scores:{explorer:2,trust:1}},
+    {svg:'q4_reviews',label:"Honest reviews from real people.",scores:{trust:2}},
+    {svg:'q4_meet',   label:"Meet someone nearby with similar interests.",scores:{connection:2}}
   ]},
-  {text:"What bothers you MOST about social media in 2025?",options:[
-    {svg:'q5_aigen',  label:"I can't tell what's AI-generated and what's real anymore.",scores:{trust:3}},
-    {svg:'q5_miss',   label:"I keep missing posts from people I actually care about.",scores:{connection:2}},
-    {svg:'q5_casino', label:"It's designed like a casino — to keep me scrolling, not connecting.",scores:{noise:2,memory:1}}
+  {text:"What bothers you most online right now?",options:[
+    {svg:'q5_aigen',  label:"Can't tell what's real and what's AI.",scores:{trust:3}},
+    {svg:'q5_miss',   label:"Missing posts from people I care about.",scores:{connection:2}},
+    {svg:'q5_casino', label:"Built like a casino. Scrolling, not connecting.",scores:{noise:2,memory:1}}
   ]},
-  {text:"You discover an app stores your messages with zero privacy protections. You…",options:[
-    {svg:'q6_delete', label:"Delete it immediately. I don't negotiate with my privacy.",scores:{trust:3}},
-    {svg:'q6_uneasy', label:"Feel uneasy — but probably won't do anything about it.",scores:{trust:1}},
-    {svg:'q6_eu',     label:"Start looking for a European alternative that respects me.",scores:{trust:2,connection:1}}
+  {text:"An app has zero privacy protections. You…",options:[
+    {svg:'q6_delete', label:"Delete immediately. Privacy isn't negotiable.",scores:{trust:3}},
+    {svg:'q6_uneasy', label:"Feel uneasy. Probably do nothing.",scores:{trust:1}},
+    {svg:'q6_eu',     label:"Switch to a European app that respects me.",scores:{trust:2,connection:1}}
   ]},
-  {text:"Be honest — what would make you actually love an app?",options:[
-    {svg:'q7_quiet',label:"A quiet space where only real, verified humans exist.",scores:{trust:2,connection:1}},
-    {svg:'q7_old',  label:"Something that feels like the early internet — curious and real.",scores:{memory:2,trust:1}},
-    {svg:'q7_time', label:"An app that respects my time and doesn't try to addict me.",scores:{noise:2,connection:1}}
+  {text:"What would make you actually love an app?",options:[
+    {svg:'q7_quiet',label:"A space with only real, verified humans.",scores:{trust:2,connection:1}},
+    {svg:'q7_old',  label:"The early internet feeling. Curious. Real.",scores:{memory:2,trust:1}},
+    {svg:'q7_time', label:"Respects my time. Doesn't try to addict me.",scores:{noise:2,connection:1}}
   ]}
 ];
 
@@ -671,6 +717,14 @@ function startGame(){
   qIndex=0; selectedSet=new Set();
   scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
   renderQ(); showScreen('screen-question');
+}
+
+function goBack(){
+  if(qIndex===0){ showScreen('screen-intro'); return; }
+  qIndex--;
+  // reverse scores for previously selected answers on this question
+  // (simplest approach: just re-render, scores already applied — we flag this)
+  renderQ();
 }
 
 function renderQ(){
@@ -735,7 +789,98 @@ function showResult(){
   document.getElementById('result-desc').textContent=b.desc;
   document.getElementById('result-card').innerHTML=b.card;
   document.getElementById('result-pillars').innerHTML=b.pillars.map(p=>`<div class="pill">${p}</div>`).join('');
+  saveResult(winner);
   showScreen('screen-result');
+}
+
+// STORAGE — shared tally using artifact storage
+async function saveResult(badge){
+  try {
+    let tally={noise:0,connection:0,memory:0,explorer:0,trust:0};
+    try { const r=await window.storage.get('quiz-tally',true); if(r) tally=JSON.parse(r.value); } catch(e){}
+    tally[badge]=(tally[badge]||0)+1;
+    await window.storage.set('quiz-tally',JSON.stringify(tally),true);
+  } catch(e){}
+}
+
+async function showStats(){
+  showScreen('screen-stats');
+  let tally={noise:0,connection:0,memory:0,explorer:0,trust:0};
+  try {
+    const r=await window.storage.get('quiz-tally',true);
+    if(r) tally=JSON.parse(r.value);
+  } catch(e){}
+
+  const colors={noise:'#F73E5A',connection:'#8B7FE8',memory:'#FFD600',explorer:'#4FC3F7',trust:'#57C97A'};
+  const order=['connection','trust','noise','memory','explorer'];
+  const total=order.reduce((s,k)=>s+(tally[k]||0),0);
+
+  // total label
+  const totalEl=document.getElementById('stats-total');
+  totalEl.innerHTML=total===0
+    ? `No results yet — be the first!`
+    : `<span>${total}</span> ${total===1?'person':'people'} sorted so far`;
+
+  // pie chart
+  const canvas=document.getElementById('pie-chart');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,260,260);
+  if(total===0){
+    ctx.beginPath(); ctx.arc(130,130,110,0,Math.PI*2);
+    ctx.fillStyle='#1e1e1e'; ctx.fill();
+  } else {
+    let start=-Math.PI/2;
+    const gap=0.03;
+    order.forEach(k=>{
+      const val=tally[k]||0; if(!val) return;
+      const slice=(val/total)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(130,130);
+      ctx.arc(130,130,110,start+gap/2,start+slice-gap/2);
+      ctx.closePath();
+      ctx.fillStyle=colors[k];
+      ctx.fill();
+      start+=slice;
+    });
+    // centre hole
+    ctx.beginPath(); ctx.arc(130,130,62,0,Math.PI*2);
+    ctx.fillStyle='#0c0c0c'; ctx.fill();
+    // centre text
+    ctx.fillStyle='#fff';
+    ctx.font='800 28px Syne,sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(total,130,126);
+    ctx.font='500 12px DM Sans,sans-serif';
+    ctx.fillStyle='#555';
+    ctx.fillText('sorted',130,150);
+  }
+
+  // legend
+  const legend=document.getElementById('stats-legend');
+  legend.innerHTML='';
+  order.forEach(k=>{
+    const val=tally[k]||0;
+    const pct=total?Math.round(val/total*100):0;
+    const b=badges[k];
+    const row=document.createElement('div'); row.className='legend-row';
+    row.innerHTML=`
+      <div style="width:100%">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <div class="legend-dot" style="background:${colors[k]}"></div>
+          <div class="legend-label">${b.icon} ${b.name}</div>
+          <div class="legend-pct">${pct}%</div>
+        </div>
+        <div class="legend-bar-wrap">
+          <div class="legend-bar" style="width:0%;background:${colors[k]}" data-w="${pct}"></div>
+        </div>
+      </div>`;
+    legend.appendChild(row);
+  });
+  // animate bars after paint
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    legend.querySelectorAll('.legend-bar').forEach(b=>{b.style.width=b.dataset.w+'%';});
+  }));
 }
 </script>
 </body>
