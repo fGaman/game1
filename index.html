@@ -58,21 +58,30 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
 .q-text-wrap { padding:4px 20px 18px; flex-shrink:0; }
 .q-text { font-family:'Syne',sans-serif; font-size:clamp(16px,4.5vw,21px); font-weight:700; line-height:1.25; letter-spacing:-.3px; }
 
-/* 2x2 GRID */
-.options-grid { width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 12px 12px; flex:1; }
-.opt-card { background:var(--card); border:2px solid #1f1f1f; border-radius:20px; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:border-color .18s,transform .18s; animation:fadeUp .4s cubic-bezier(.22,1,.36,1) both; }
+/* OPTIONS LIST */
+.options-list { width:100%; display:flex; flex-direction:column; gap:0; flex:1; }
+.opt-card { background:var(--black); border-top:1px solid #1e1e1e; cursor:pointer; display:flex; flex-direction:row; align-items:center; transition:background .15s; animation:fadeUp .4s cubic-bezier(.22,1,.36,1) both; position:relative; overflow:hidden; }
+.opt-card:last-child { border-bottom:1px solid #1e1e1e; }
 .opt-card:nth-child(1){animation-delay:.05s}
-.opt-card:nth-child(2){animation-delay:.10s}
-.opt-card:nth-child(3){animation-delay:.15s}
-.opt-card:nth-child(4){animation-delay:.20s}
-.opt-card:active { transform:scale(.96); }
-.opt-card.selected { border-color:var(--red); background:#1a0a0d; }
-.opt-illus { width:100%; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#111; flex-shrink:0; }
+.opt-card:nth-child(2){animation-delay:.12s}
+.opt-card:nth-child(3){animation-delay:.19s}
+.opt-card:active { background:#141414; }
+.opt-card.selected { background:#120508; }
+.opt-card.selected::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--red); }
+.opt-illus { width:110px; height:110px; flex-shrink:0; overflow:hidden; background:#111; }
 .opt-illus svg { width:100%; height:100%; display:block; }
-.opt-label { padding:8px 11px 10px; font-family:'Syne',sans-serif; font-size:clamp(15px,4vw,18px); font-weight:700; line-height:1.25; letter-spacing:-.3px; color:#ccc; flex:0 0 auto; }
+.opt-label { padding:16px 18px; font-family:'Syne',sans-serif; font-size:clamp(15px,4vw,18px); font-weight:700; line-height:1.25; letter-spacing:-.3px; color:#888; flex:1; }
 .opt-card.selected .opt-label { color:#fff; }
-.btn-restart { background:transparent; color:#444; border:1.5px solid #2a2a2a; border-radius:100px; padding:14px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; margin-top:4px; }
-.btn-restart:active { transform:scale(.98); color:#888; border-color:#444; }
+.opt-check { width:24px; height:24px; border-radius:50%; border:2px solid #333; flex-shrink:0; margin-right:18px; display:flex; align-items:center; justify-content:center; transition:all .18s; }
+.opt-card.selected .opt-check { background:var(--red); border-color:var(--red); }
+.opt-check-tick { width:10px; height:10px; opacity:0; transition:opacity .15s; }
+.opt-card.selected .opt-check-tick { opacity:1; }
+
+/* NEXT BUTTON */
+.q-footer { width:100%; padding:16px 20px 32px; flex-shrink:0; }
+.btn-next { background:var(--red); color:#fff; border:none; border-radius:100px; padding:18px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 28px var(--red-glow); transition:all .2s; opacity:.35; pointer-events:none; }
+.btn-next.enabled { opacity:1; pointer-events:all; }
+.btn-next:active { transform:scale(.98); }
 
 /* SORTING */
 #screen-sorting { justify-content:center; text-align:center; padding:48px 28px; }
@@ -100,6 +109,8 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
 .cta-section { padding:24px 22px 0; width:100%; animation:fadeUp .4s .85s both; }
 .btn-cta { background:var(--red); color:#fff; border:none; border-radius:100px; padding:20px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 32px var(--red-glow); transition:all .2s; margin-bottom:14px; }
 .btn-cta:active { transform:scale(.98); }
+.btn-restart { background:transparent; color:#444; border:1.5px solid #2a2a2a; border-radius:100px; padding:14px 36px; width:100%; font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; margin-top:4px; }
+.btn-restart:active { transform:scale(.98); color:#888; border-color:#444; }
 .cta-note { font-size:12px; color:#3a3a3a; text-align:center; }
 .cta-note span { color:#555; }
 </style>
@@ -131,7 +142,8 @@ html,body { height:100%; background:var(--black); color:var(--white); font-famil
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
   <div class="q-text-wrap"><div class="q-text" id="q-text"></div></div>
-  <div class="options-grid" id="options-grid"></div>
+  <div class="options-list" id="options-grid"></div>
+  <div class="q-footer"><button class="btn-next" id="btn-next" onclick="nextQ()">Next →</button></div>
 </div>
 
 <!-- SORTING -->
@@ -598,47 +610,40 @@ q7_time:`<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${mBg('#1
 </svg>`
 };
 
-// DATA
+// DATA — 3 options per question, multi-select
 const questions=[
   {text:"You open your favourite social app. What greets you first?",options:[
     {svg:'q1_ad',    label:"An ad for something you mentioned in a private conversation",scores:{noise:2}},
     {svg:'q1_algo',  label:"A viral video from someone you've never heard of",scores:{noise:2}},
-    {svg:'q1_friend',label:"A post from a friend you actually know",scores:{connection:2}},
-    {svg:'q1_notif', label:"A notification that means absolutely nothing to you",scores:{noise:1,trust:-1}}
+    {svg:'q1_friend',label:"A post from a friend you actually know",scores:{connection:2}}
   ]},
   {text:"A DM arrives from someone you don't know. Your gut says…",options:[
     {svg:'q2_bot',    label:"Probably a bot or scam. I don't even open it.",scores:{trust:2}},
-    {svg:'q2_ignore', label:"Could be real, but I'll ignore it just in case.",scores:{trust:1}},
-    {svg:'q2_curious',label:"I check their profile first — could be interesting.",scores:{connection:1,explorer:1}},
+    {svg:'q2_curious',label:"I check their profile — could be interesting.",scores:{connection:1,explorer:1}},
     {svg:'q2_off',    label:"I've turned off DMs from strangers entirely.",scores:{noise:1,trust:1}}
   ]},
-  {text:"Something beautiful happens. You want to share it. Who do you picture seeing it?",options:[
+  {text:"Something beautiful happens. Who do you picture seeing it?",options:[
     {svg:'q3_friends',label:"Close friends — the people who actually know me.",scores:{connection:2}},
-    {svg:'q3_public', label:"Everyone following me — more reactions the better.",scores:{noise:-1}},
     {svg:'q3_memory', label:"No one. I just want to preserve the memory.",scores:{memory:2}},
     {svg:'q3_nearby', label:"Real people nearby who might relate to this moment.",scores:{explorer:2}}
   ]},
-  {text:"You arrive in a new city. What do you wish your phone could actually do?",options:[
+  {text:"You arrive in a new city. What do you wish your phone could do?",options:[
     {svg:'q4_locals', label:"Show what real locals — not influencers — are doing nearby.",scores:{explorer:2,trust:1}},
     {svg:'q4_reviews',label:"Honest reviews from real humans, not SEO-farmed content.",scores:{trust:2}},
-    {svg:'q4_meet',   label:"Help me meet someone with similar interests nearby.",scores:{connection:2}},
-    {svg:'q4_maps',   label:"Honestly? I just use Google Maps and keep to myself.",scores:{noise:1}}
+    {svg:'q4_meet',   label:"Help me meet someone with similar interests nearby.",scores:{connection:2}}
   ]},
   {text:"What bothers you MOST about social media in 2025?",options:[
     {svg:'q5_aigen',  label:"I can't tell what's AI-generated and what's real anymore.",scores:{trust:3}},
-    {svg:'q5_ads',    label:"Every app is secretly selling my attention to advertisers.",scores:{noise:2,trust:1}},
     {svg:'q5_miss',   label:"I keep missing posts from people I actually care about.",scores:{connection:2}},
     {svg:'q5_casino', label:"It's designed like a casino — to keep me scrolling, not connecting.",scores:{noise:2,memory:1}}
   ]},
-  {text:"You discover an app stores your messages on servers with zero privacy laws. You…",options:[
+  {text:"You discover an app stores your messages with zero privacy protections. You…",options:[
     {svg:'q6_delete', label:"Delete it immediately. I don't negotiate with my privacy.",scores:{trust:3}},
     {svg:'q6_uneasy', label:"Feel uneasy — but probably won't do anything about it.",scores:{trust:1}},
-    {svg:'q6_eu',     label:"Start looking for a European alternative that respects me.",scores:{trust:2,connection:1}},
-    {svg:'q6_unaware',label:"Honestly, I'd never really thought about where my data lives.",scores:{explorer:1}}
+    {svg:'q6_eu',     label:"Start looking for a European alternative that respects me.",scores:{trust:2,connection:1}}
   ]},
   {text:"Be honest — what would make you actually love an app?",options:[
-    {svg:'q7_one',  label:"One clean space for chat, people, and discovery. No chaos.",scores:{explorer:2,noise:1}},
-    {svg:'q7_quiet',label:"A quiet corner of the internet where only real humans exist.",scores:{trust:2,connection:1}},
+    {svg:'q7_quiet',label:"A quiet space where only real, verified humans exist.",scores:{trust:2,connection:1}},
     {svg:'q7_old',  label:"Something that feels like the early internet — curious and real.",scores:{memory:2,trust:1}},
     {svg:'q7_time', label:"An app that respects my time and doesn't try to addict me.",scores:{noise:2,connection:1}}
   ]}
@@ -652,7 +657,7 @@ const badges={
   trust:{icon:"🛡️",name:"The Conscious One",desc:"You've started questioning everything online — and rightly so. Who's real? Where's your data? Who profits from your attention? You're not paranoid, you're awake. You've been waiting for something built with this in mind.",card:"<strong>Monnett is made and hosted in Europe.</strong> Public posts require GPS + a symbolic €4/year — enough to confirm a real human, not a bot farm. E2E encrypted chat. Zero tracking. Zero ad targeting. A network you can actually trust.",pillars:["Made & hosted in Europe 🇪🇺","Proof of human (€4/yr)","E2E encrypted chat","Zero tracking"]}
 };
 
-let qIndex=0, selected=null, scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
+let qIndex=0, selectedSet=new Set(), scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
 
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
@@ -663,45 +668,63 @@ function showScreen(id){
 }
 
 function startGame(){
-  qIndex=0; selected=null;
+  qIndex=0; selectedSet=new Set();
   scores={noise:0,connection:0,memory:0,explorer:0,trust:0};
   renderQ(); showScreen('screen-question');
 }
 
 function renderQ(){
-  selected=null;
+  selectedSet=new Set();
   const q=questions[qIndex];
   const pct=Math.round(qIndex/questions.length*100);
   document.getElementById('q-label').textContent=String(qIndex+1).padStart(2,'0')+' of '+String(questions.length).padStart(2,'0');
   document.getElementById('q-pct').textContent=pct+'%';
   document.getElementById('progress-fill').style.width=pct+'%';
   document.getElementById('q-text').textContent=q.text;
-  const grid=document.getElementById('options-grid');
-  grid.innerHTML='';
+  const btn=document.getElementById('btn-next');
+  btn.classList.remove('enabled');
+  const list=document.getElementById('options-grid');
+  list.innerHTML='';
   q.options.forEach((opt,i)=>{
     const card=document.createElement('div'); card.className='opt-card';
     card.style.animationDelay=(i*0.07)+'s';
+    // illustration
     const illus=document.createElement('div'); illus.className='opt-illus';
     illus.innerHTML=SVG[opt.svg]||'<svg viewBox="0 0 300 300"><rect width="300" height="300" fill="#222"/></svg>';
+    // label
     const label=document.createElement('div'); label.className='opt-label'; label.textContent=opt.label;
-    card.appendChild(illus); card.appendChild(label);
-    card.addEventListener('click',()=>pick(card,i));
-    grid.appendChild(card);
+    // checkbox
+    const chk=document.createElement('div'); chk.className='opt-check';
+    chk.innerHTML=`<svg class="opt-check-tick" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    card.appendChild(illus); card.appendChild(label); card.appendChild(chk);
+    card.addEventListener('click',()=>toggle(card,i));
+    list.appendChild(card);
   });
 }
 
-function pick(el,idx){
-  if(selected!==null)return;
-  selected=idx;
-  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  const s=questions[qIndex].options[idx].scores;
-  Object.entries(s).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
-  setTimeout(()=>{
-    qIndex++;
-    if(qIndex<questions.length){renderQ();}
-    else{showScreen('screen-sorting');setTimeout(showResult,2600);}
-  },380);
+function toggle(el,idx){
+  if(selectedSet.has(idx)){
+    selectedSet.delete(idx);
+    el.classList.remove('selected');
+  } else {
+    selectedSet.add(idx);
+    el.classList.add('selected');
+  }
+  const btn=document.getElementById('btn-next');
+  if(selectedSet.size>0) btn.classList.add('enabled');
+  else btn.classList.remove('enabled');
+}
+
+function nextQ(){
+  if(selectedSet.size===0) return;
+  // apply scores for all selected
+  selectedSet.forEach(idx=>{
+    const s=questions[qIndex].options[idx].scores;
+    Object.entries(s).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
+  });
+  qIndex++;
+  if(qIndex<questions.length){ renderQ(); }
+  else { showScreen('screen-sorting'); setTimeout(showResult,2600); }
 }
 
 function showResult(){
